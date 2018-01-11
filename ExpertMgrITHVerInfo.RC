@@ -1,0 +1,30 @@
+LANGUAGE LANG_ENGLISH,SUBLANG_ENGLISH_US
+
+1 VERSIONINFO LOADONCALL MOVEABLE DISCARDABLE IMPURE
+FILEVERSION 1, 2, 0, 285
+PRODUCTVERSION 1, 2, 0, 285
+FILEFLAGSMASK VS_FFI_FILEFLAGSMASK
+FILEOS VOS__WINDOWS32
+FILETYPE VFT_APP
+{
+  BLOCK "StringFileInfo"
+  {
+    BLOCK "040904E4"
+    {
+      VALUE "CompanyName", "Seasons Fall Music\000"
+      VALUE "FileDescription", "An application to manage multiple instances of RAD Studio experts.\000"
+      VALUE "FileVersion", "1.2.0.285\000"
+      VALUE "InternalName", "ExpertMgr\000"
+      VALUE "LegalCopyright", "Seasons Fall Music\000"
+      VALUE "LegalTrademarks", "Seasons Fall Music\000"
+      VALUE "OriginalFilename", "ExpertMgr\000"
+      VALUE "ProductName", "ExpertMgr\000"
+      VALUE "ProductVersion", "1.2\000"
+      VALUE "Comments", "An application to manage multiple instances of RAD Studio experts.\000"
+    }
+  }
+  BLOCK "VarFileInfo"
+  {
+    VALUE "Translation", 1033, 1252
+  }
+}
