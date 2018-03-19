@@ -53,7 +53,7 @@
         <ILINK_LibraryPath>Source\;..\;D:\HoylD\RAD Studio\Applications\Expert Manager\;D:\HoylD\RAD Studio\Applications\Expert Manager\Source\;$(ILINK_LibraryPath)</ILINK_LibraryPath>
         <ProjectType>CppVCLApplication</ProjectType>
         <Icon_MainIcon>$(BDS)\bin\cbuilder_PROJECTICON.ico</Icon_MainIcon>
-        <AllPackageLibs>rtl.lib;vcl.lib;vclactnband.lib;vclx.lib</AllPackageLibs>
+        <AllPackageLibs>rtl.lib;vcl.lib;vclactnband.lib;vclx.lib;CodeSiteLoggingPkg.lib;vclimg.lib</AllPackageLibs>
         <Multithreaded>true</Multithreaded>
         <_TCHARMapping>wchar_t</_TCHARMapping>
         <SanitizedProjectName>ExpertMgr</SanitizedProjectName>
@@ -108,13 +108,14 @@
         <Defines>ENABLE_CODESITE;$(Defines)</Defines>
         <BT_BuildType>Debug</BT_BuildType>
         <BCC_UseClassicCompiler>false</BCC_UseClassicCompiler>
-        <LinkPackageStatics>rtl.lib;vcl.lib;vclactnband.lib;vclx.lib</LinkPackageStatics>
+        <LinkPackageStatics>rtl.lib;vcl.lib;vclactnband.lib;vclx.lib;CodeSiteLoggingPkg.lib;vclimg.lib</LinkPackageStatics>
         <UsePackages>false</UsePackages>
         <FinalOutputDir>.\</FinalOutputDir>
         <DynamicRTL>false</DynamicRTL>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <AppEnableHighDPI>true</AppEnableHighDPI>
         <AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
+        <ILINK_LibraryPath>..\..\Binaries\CS5\Lib\RX10.2\Win32\;$(ILINK_LibraryPath)</ILINK_LibraryPath>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2)'!=''">
         <Defines>NDEBUG;$(Defines)</Defines>

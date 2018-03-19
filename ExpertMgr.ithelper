@@ -10,7 +10,7 @@ CompileWithBRCC32=0
 MajorVer=1
 MinorVer=2
 ReleaseVer=0
-BuildVer=286
+BuildVer=287
 ResourceName=ExpertMgrITHVerInfo
 
 [Zipping]
@@ -25,7 +25,7 @@ Item0=D:\HoylD\RAD Studio\Applications\Expert Manager\*.exe
 [VersionInfo]
 CompanyName=Seasons Fall Music
 FileDescription=An application to manage multiple instances of RAD Studio experts.
-FileVersion=1.2.0.286
+FileVersion=1.2.0.287
 InternalName=ExpertMgr
 LegalCopyright=Seasons Fall Music
 LegalTrademarks=Seasons Fall Music

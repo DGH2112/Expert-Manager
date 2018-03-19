@@ -14,3 +14,16 @@ wchar_t strDisabledExperts[] = L"Experts\\Disabled";
 wchar_t strKnownIDEPackages[] = L"Known IDE Packages";
 /** A string constant for the registry sub-location for the Known Packages. **/
 wchar_t strKnownPackages[] = L"Known Packages";
+/** A string constant for the registry location of the applications setup settings. **/
+wchar_t strSetup[] = L"Setup";
+wchar_t strLeft[] = L"Left";
+wchar_t strTop[] = L"Top";
+wchar_t strWidth[] = L"Width";
+wchar_t strHeight[] = L"Height";
+wchar_t strDividerWidth[] = L"DividerWidth";
+wchar_t strExpertsListWidth[] = L"ExpertsListWidth";
+wchar_t strKnownIDEPackagesListWidth[] = L"KnownIDEPackagesListWidth";
+wchar_t strKnownPackagesListWidth[] = L"KnownPackagesListWidth";
+wchar_t strFocusedPage[] = L"FocusedPage";
+wchar_t strSelectedNode[] = L"SelectedNode";
+

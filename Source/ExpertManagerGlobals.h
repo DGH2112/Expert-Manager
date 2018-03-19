@@ -8,6 +8,17 @@ extern wchar_t strExperts[];
 extern wchar_t strDisabledExperts[];
 extern wchar_t strKnownIDEPackages[];
 extern wchar_t strKnownPackages[];
+extern wchar_t strSetup[];
+extern wchar_t strLeft[];
+extern wchar_t strTop[];
+extern wchar_t strWidth[];
+extern wchar_t strHeight[];
+extern wchar_t strDividerWidth[];
+extern wchar_t strExpertsListWidth[];
+extern wchar_t strKnownIDEPackagesListWidth[];
+extern wchar_t strKnownPackagesListWidth[];
+extern wchar_t strFocusedPage[];
+extern wchar_t strSelectedNode[];
 #endif
 
 

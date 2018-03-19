@@ -39,25 +39,32 @@ __fastcall TfrmExpertManager::TfrmExpertManager(TComponent* Owner) : TForm(Owner
 **/
 void __fastcall TfrmExpertManager::LoadSettings() {
   std::unique_ptr<TRegistryINIFileCls> iniFile( new TRegistryINIFileCls(strRegSettings) );
-  Left = iniFile->ReadInteger(L"Setup", L"Left", 100);
-  Top = iniFile->ReadInteger("Setup", "Top", 100);
-  Width = iniFile->ReadInteger("Setup", "Width", Width);
-  Height = iniFile->ReadInteger("Setup", "Height", Height);
-  tvExpertInstallations->Width = iniFile->ReadInteger("Setup", "DividerWidth",
+  Left = iniFile->ReadInteger(strSetup, strLeft, 100);
+  Top = iniFile->ReadInteger(strSetup, strTop, 100);
+  Width = iniFile->ReadInteger(strSetup, strWidth, Width);
+  Height = iniFile->ReadInteger(strSetup, strHeight, Height);
+  tvExpertInstallations->Width = iniFile->ReadInteger(strSetup, strDividerWidth,
     tvExpertInstallations->Width);
-  lvInstalledExperts->Columns->Items[0]->Width =
-    iniFile->ReadInteger("Setup", "ExpertsListWidth",
-      lvInstalledExperts->Columns->Items[0]->Width);
-  lvKnownIDEPackages->Columns->Items[0]->Width =
-    iniFile->ReadInteger("Setup", "KnownIDEPackagesListWidth",
-      lvKnownIDEPackages->Columns->Items[0]->Width);
-  lvKnownPackages->Columns->Items[0]->Width =
-    iniFile->ReadInteger("Setup", "KnownPackagesListWidth",
-      lvKnownPackages->Columns->Items[0]->Width);
-  pagPages->ActivePageIndex = iniFile->ReadInteger("Setup", "FocusedPage", pagPages->ActivePageIndex);
-  FSelectedNodePath = iniFile->ReadString("Setup", "SelectedNode", "");
+  lvInstalledExperts->Columns->Items[0]->Width = iniFile->ReadInteger(strSetup, strExpertsListWidth,
+    lvInstalledExperts->Columns->Items[0]->Width);
+  lvKnownIDEPackages->Columns->Items[0]->Width = iniFile->ReadInteger(strSetup,
+    strKnownIDEPackagesListWidth, lvKnownIDEPackages->Columns->Items[0]->Width);
+  lvKnownPackages->Columns->Items[0]->Width = iniFile->ReadInteger(strSetup, strKnownPackagesListWidth,
+    lvKnownPackages->Columns->Items[0]->Width);
+  pagPages->ActivePageIndex = iniFile->ReadInteger(strSetup, strFocusedPage, pagPages->ActivePageIndex);
+  FSelectedNodePath = iniFile->ReadString(strSetup, strSelectedNode, "");
 }
 
+/**
+
+  This method searches the treeview for the given selected node and if found selects that node.
+
+  @precon  None.
+  @postcon The given node is selected if found in the treeview.
+
+  @param   strSelectedPath as a String as a Constant
+
+**/
 void __fastcall TfrmExpertManager::SelectTreeViewNode(const String strSelectedPath) {
   for (int iNode = 0; iNode < tvExpertInstallations->Items->Count; iNode++) {
     String strNodePath = FExpandedNodeManager->ConvertNodeToPath(
@@ -79,16 +86,16 @@ void __fastcall TfrmExpertManager::SelectTreeViewNode(const String strSelectedPa
 **/
 void __fastcall TfrmExpertManager::SaveSettings() {
   std::unique_ptr<TRegistryINIFileCls> iniFile( new TRegistryINIFileCls(strRegSettings) );
-  iniFile->WriteInteger("Setup", "Left", Left);
-  iniFile->WriteInteger("Setup", "Top", Top);
-  iniFile->WriteInteger("Setup", "Width", Width);
-  iniFile->WriteInteger("Setup", "Height", Height);
-  iniFile->WriteInteger("Setup", "DividerWidth", tvExpertInstallations->Width);
-  iniFile->WriteInteger("Setup", "ExpertsListWidth", lvInstalledExperts->Columns->Items[0]->Width);
-  iniFile->WriteInteger("Setup", "KnownIDEPackagesListWidth", lvKnownIDEPackages->Columns->Items[0]->Width);
-  iniFile->WriteInteger("Setup", "KnownPackagesListWidth", lvKnownPackages->Columns->Items[0]->Width);
-  iniFile->WriteInteger("Setup", "FocusedPage", pagPages->ActivePageIndex);
-  iniFile->WriteString("Setup", "SelectedNode",
+  iniFile->WriteInteger(strSetup, strLeft, Left);
+  iniFile->WriteInteger(strSetup, strTop, Top);
+  iniFile->WriteInteger(strSetup, strWidth, Width);
+  iniFile->WriteInteger(strSetup, strHeight, Height);
+  iniFile->WriteInteger(strSetup, strDividerWidth, tvExpertInstallations->Width);
+  iniFile->WriteInteger(strSetup, strExpertsListWidth, lvInstalledExperts->Columns->Items[0]->Width);
+  iniFile->WriteInteger(strSetup, strKnownIDEPackagesListWidth, lvKnownIDEPackages->Columns->Items[0]->Width);
+  iniFile->WriteInteger(strSetup, strKnownPackagesListWidth, lvKnownPackages->Columns->Items[0]->Width);
+  iniFile->WriteInteger(strSetup, strFocusedPage, pagPages->ActivePageIndex);
+  iniFile->WriteString(strSetup, strSelectedNode,
     FExpandedNodeManager->ConvertNodeToPath(tvExpertInstallations->Selected));
 }
 
@@ -131,7 +138,8 @@ void __fastcall TfrmExpertManager::IterateExpertInstallations() {
 **/
 void __fastcall TfrmExpertManager::IterateSubInstallations(TTreeNode *Node,
   String strRootInstallation) {
-  std::unique_ptr<TRegistryINIFileCls> iniFile( new TRegistryINIFileCls("Software\\" + strRootInstallation + "\\") );
+  std::unique_ptr<TRegistryINIFileCls> iniFile( new TRegistryINIFileCls(L"Software\\" +
+    strRootInstallation + "\\") );
   std::unique_ptr<TStringList> sl( new TStringList() );
   iniFile->ReadSections(sl.get());
   TTreeNode *N = NULL;
