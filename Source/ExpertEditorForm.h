@@ -10,6 +10,9 @@
 
 typedef String __fastcall (__closure *TExpandRADStudioMacros)(String strFileName);
 
+/** An enumerate for the different dialogue types: Expert and Package. **/
+enum TDlgType {dtExpert, dtPackage};
+
 /** This class represents a form for editing expert installations. **/
 class TfrmExpertEditor : public TForm {
 __published:// IDE-managed Components
@@ -27,8 +30,8 @@ private:    // User declarations
   TExpandRADStudioMacros FExpandRADStudioMacros;
 public:     // User declarations
   __fastcall TfrmExpertEditor(TComponent* Owner);
-  static bool __fastcall Execute(String &strExpertName, String &strExpertFileName,
-    TExpandRADStudioMacros ExpandRADStudioMacrosProc);
+  static bool __fastcall Execute(const TDlgType DlgType, String &strExpertName,
+    String &strExpertFileName, TExpandRADStudioMacros ExpandRADStudioMacrosProc);
 };
 
 extern PACKAGE TfrmExpertEditor *frmExpertEditor;

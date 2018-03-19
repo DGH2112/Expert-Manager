@@ -41,7 +41,7 @@ object frmExpertManager: TfrmExpertManager
     Top = 0
     Width = 507
     Height = 450
-    ActivePage = tabKnownIDEPackages
+    ActivePage = tabKnownPackages
     Align = alClient
     TabOrder = 1
     object tabExperts: TTabSheet
@@ -141,6 +141,7 @@ object frmExpertManager: TfrmExpertManager
         TabOrder = 1
         ViewStyle = vsReport
         OnAdvancedCustomDrawItem = lvInstalledExpertsAdvancedCustomDrawItem
+        OnDblClick = lvKnownIDEPackagesDblClick
         OnItemChecked = lvKnownIDEPackagesItemChecked
       end
     end
@@ -191,6 +192,7 @@ object frmExpertManager: TfrmExpertManager
         TabOrder = 1
         ViewStyle = vsReport
         OnAdvancedCustomDrawItem = lvInstalledExpertsAdvancedCustomDrawItem
+        OnDblClick = lvKnownPackagesDblClick
         OnItemChecked = lvKnownPackagesItemChecked
       end
     end
@@ -229,7 +231,7 @@ object frmExpertManager: TfrmExpertManager
             ShortCut = 16453
           end
           item
-            Action = actDeleteKnownPackages
+            Action = actDeleteKnownIDEPackage
             ImageIndex = 2
             ShortCut = 16430
           end>
@@ -248,7 +250,7 @@ object frmExpertManager: TfrmExpertManager
             ShortCut = 16453
           end
           item
-            Action = actDeleteKnownIDEPackage
+            Action = actDeleteKnownPackages
             ImageIndex = 2
             ShortCut = 16430
           end>
@@ -265,6 +267,8 @@ object frmExpertManager: TfrmExpertManager
       SecondaryShortCuts.Strings = (
         'Alt+E')
       ShortCut = 16453
+      OnExecute = actEditKnownPackagesExecute
+      OnUpdate = actEditDeleteKnownPackagesUpdate
     end
     object actAddKnownPackage: TAction
       Category = 'Known Packages'
@@ -273,6 +277,8 @@ object frmExpertManager: TfrmExpertManager
       SecondaryShortCuts.Strings = (
         'Alt+A')
       ShortCut = 16449
+      OnExecute = actAddKnownPackageExecute
+      OnUpdate = actActionExpertUpdate
     end
     object actDeleteKnownPackages: TAction
       Category = 'Known IDE Packages'
@@ -281,6 +287,8 @@ object frmExpertManager: TfrmExpertManager
       SecondaryShortCuts.Strings = (
         'Alt+D')
       ShortCut = 16430
+      OnExecute = actDeleteKnownPackagesExecute
+      OnUpdate = actEditDeleteKnownPackagesUpdate
     end
     object actAddExpert: TAction
       Category = 'Experts'
@@ -290,7 +298,7 @@ object frmExpertManager: TfrmExpertManager
         'Alt+A')
       ShortCut = 16449
       OnExecute = actAddExpertExecute
-      OnUpdate = actAddExpertUpdate
+      OnUpdate = actAddExpertPackageUpdate
     end
     object actEditExpert: TAction
       Category = 'Experts'
@@ -309,6 +317,7 @@ object frmExpertManager: TfrmExpertManager
       SecondaryShortCuts.Strings = (
         'Alt+A')
       ShortCut = 16449
+      OnExecute = actAddKnownIDEPackageExecute
     end
     object actEditKnownIDEPackage: TAction
       Category = 'Known IDE Packages'
@@ -317,6 +326,8 @@ object frmExpertManager: TfrmExpertManager
       SecondaryShortCuts.Strings = (
         'Alt+E')
       ShortCut = 16453
+      OnExecute = actEditKnownIDEPackageExecute
+      OnUpdate = actEditDeleteKnownIDEPackageUpdate
     end
     object actDeleteKnownIDEPackage: TAction
       Category = 'Known Packages'
@@ -325,6 +336,8 @@ object frmExpertManager: TfrmExpertManager
       SecondaryShortCuts.Strings = (
         'Alt+D')
       ShortCut = 16430
+      OnExecute = actDeleteKnownIDEPackagesExecute
+      OnUpdate = actEditDeleteKnownIDEPackageUpdate
     end
     object actDeleteExpert: TAction
       Category = 'Experts'
@@ -347,7 +360,7 @@ object frmExpertManager: TfrmExpertManager
     Left = 88
     Top = 144
     Bitmap = {
-      494C010103000800600010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C0101030008006C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000

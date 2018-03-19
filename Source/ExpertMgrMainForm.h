@@ -27,7 +27,7 @@
                    instance.
     evOkay         A node for an expert instance that has all valid entries.
     evInvalidPath  A node for an expert instance that has invalid paths / filenames.
-    evDuplication  A node for an expert instance that has duplicate filenames (not paths).
+    evDuplication  A node     for an expert instance that has duplicate filenames (not paths).
 **/
 enum TExpertValidation {evNone, evOkay, evInvalidPaths, evDuplication};
 
@@ -79,11 +79,21 @@ __published: // IDE-managed Components
   void __fastcall actEditExpertExecute(TObject *Sender);
   void __fastcall actDeleteExpertExecute(TObject *Sender);
   void __fastcall actActionExpertUpdate(TObject *Sender);
-  void __fastcall actAddExpertUpdate(TObject *Sender);
+  void __fastcall actAddExpertPackageUpdate(TObject *Sender);
   void __fastcall actFileExitExecute(TObject *Sender);
   void __fastcall lvInstalledExpertsItemChecked(TObject *Sender, TListItem *Item);
   void __fastcall lvKnownIDEPackagesItemChecked(TObject *Sender, TListItem *Item);
   void __fastcall lvKnownPackagesItemChecked(TObject *Sender, TListItem *Item);
+  void __fastcall actDeleteKnownIDEPackagesExecute(TObject *Sender);
+  void __fastcall actAddKnownIDEPackageExecute(TObject *Sender);
+  void __fastcall actEditKnownIDEPackageExecute(TObject *Sender);
+  void __fastcall actEditDeleteKnownIDEPackageUpdate(TObject *Sender);
+  void __fastcall lvKnownIDEPackagesDblClick(TObject *Sender);
+  void __fastcall actDeleteKnownPackagesExecute(TObject *Sender);
+  void __fastcall actEditDeleteKnownPackagesUpdate(TObject *Sender);
+  void __fastcall actAddKnownPackageExecute(TObject *Sender);
+  void __fastcall actEditKnownPackagesExecute(TObject *Sender);
+  void __fastcall lvKnownPackagesDblClick(TObject *Sender);
 private:     // User declarations
   std::unique_ptr<TExpandedNodeManager> FExpandedNodeManager;
   std::unique_ptr<TStringList>          FCurrentRADStudioMacros;

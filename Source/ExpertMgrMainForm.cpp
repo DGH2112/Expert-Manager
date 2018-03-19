@@ -204,7 +204,6 @@ TExpertValidation __fastcall TfrmExpertManager::CheckExperts(TTreeNode* Node, St
     iExpertValidation = evOkay;
   std::unique_ptr<TStringList> slDuplicates( new TStringList() );
   GetCurrentRADStudioMacros(strSubSection);
-  //: @refactor Enabled Experts
   sl->Clear();
   iniFile->ReadSection(strExperts, sl.get());
   for (int i = 0; i < sl->Count; i++) {
@@ -218,7 +217,6 @@ TExpertValidation __fastcall TfrmExpertManager::CheckExperts(TTreeNode* Node, St
     } else
       slDuplicates->Add(strFileName);
   }
-  //: @refactor Disabled experts
   sl->Clear();
   iniFile->ReadSection(strDisabledExperts, sl.get());
   for (int i = 0; i < sl->Count; i++) {
@@ -228,6 +226,22 @@ TExpertValidation __fastcall TfrmExpertManager::CheckExperts(TTreeNode* Node, St
   return iExpertValidation;
 }
 
+/**
+
+  This method checks the given node for package installations and returns an enumerate
+  depending on their state. If any packages have invalid paths then evInvalidPaths. If any
+  two or more packages have the same filename (not path) then the function returns
+  evDuplicates.
+
+  @precon  Node must be a valid instance.
+  @postcon Returns the collective state of the experts.
+
+  @param   Node as a TTreeNode
+  @param   strSubSection as a String
+  @param   strPackage as a String
+  @return  a TExpertValidation
+
+**/
 TExpertValidation __fastcall TfrmExpertManager::CheckPackages(TTreeNode* Node, String strSubSection,
   String strPackage) {
   TExpertValidation iPackageValidation = evOkay;
@@ -238,7 +252,6 @@ TExpertValidation __fastcall TfrmExpertManager::CheckPackages(TTreeNode* Node, S
     iPackageValidation = evOkay;
   std::unique_ptr<TStringList> slDuplicates( new TStringList() );
   GetCurrentRADStudioMacros(strSubSection);
-  //: @refactor Enabled Packages
   sl->Clear();
   iniFile->ReadSection(strPackage, sl.get());
   for (int i = 0; i < sl->Count; i++) {
@@ -402,6 +415,17 @@ void __fastcall TfrmExpertManager::tvExpertInstallationsChange(TObject *Sender,
   }
 }
 
+/**
+
+  This method updates the list views in the tabs to contain the experts and pacakges for the selected
+  installation.
+
+  @precon  Node must be a valid instance
+  @postcon The experts and packages are listed in the listviews in the tab pages.
+
+  @param   Node as a TTreeNode
+
+**/
 void __fastcall TfrmExpertManager::ShowExperts(TTreeNode *Node) {
   lvInstalledExperts->Clear();
   if (Node) {
@@ -494,6 +518,19 @@ void __fastcall TfrmExpertManager::AddPackagesToList(TListView* lvList, String s
     RenderPackageList(lvList, slPackages.get(), FLastKnownPackagesViewName, strViewName);
 }
 
+/**
+
+  This method renders the list of packages passed to the function into the given listview control.
+
+  @precon  lvList and slPackages must be validl instances.
+  @postcon The list of packages in slPackages is renddered in the listview lvList.
+
+  @param   lvList as a TListView
+  @param   slPackages as a TStringList
+  @param   strLastViewName as a Strign as a Reference
+  @param strViewName as a String
+
+**/
 void __fastcall TfrmExpertManager::RenderPackageList(TListView* lvList, TStringList* slPackages,
   String &strLastViewName, const String strViewName) {
   TUPStrList slDups( new TStringList() );
@@ -525,13 +562,13 @@ void __fastcall TfrmExpertManager::RenderPackageList(TListView* lvList, TStringL
         Item->Data = (void*)evInvalidPaths;
       slDups->AddObject(strFileName, (TObject*)Item->Index); //: @bug CANNOT STORE INDEX ACROSS 2 SETS
     }
-    SetCurrentPosition(lvList, iSelected);
+    if (iSelected >= lvList->Items->Count)
+      iSelected--;
+    SetCurrentPosition(lvList, iSelected); //: @bug iSelected MUST be less thatn count
   } __finally {
     lvList->Items->EndUpdate();
   }
 }
-
-/** ***************************** GOT HERE EDITING (GOING UP) ***************************** **/
 
 /**
 
@@ -589,7 +626,7 @@ void __fastcall TfrmExpertManager::GetPackageList(TStringList* slPackages, const
   TUPIniFile iniFile( new TRegistryINIFileCls(strSubSection) );
   TUPStrList slKeys( new TStringList() );
   iniFile->ReadSection(strKey, slKeys.get());
-  for (int iKey = 0; iKey < slKeys->Count - 1; iKey++) {
+  for (int iKey = 0; iKey < slKeys->Count; iKey++) {
     String S = iniFile->ReadString(strKey, slKeys->Strings[iKey], "");
     slPackages->AddPair(S, slKeys->Strings[iKey]);
   }
@@ -675,6 +712,9 @@ void __fastcall TfrmExpertManager::lvInstalledExpertsDblClick(TObject *Sender) {
   @precon  tvExpertInstallations->Selected must be a valid node.
   @postcon Updates the current treenodes enumerate valid and asks the tre view to repaint.
 
+  @param   Node as a TTreeNode
+  @param   boolShow as a bool as a Constant
+
 **/
 void __fastcall TfrmExpertManager::UpdateTreeViewStatus(TTreeNode* Node, const bool boolShow) {
   TExpertValidation iExpertValidation = CheckExperts(Node, GetRegPathToNode(Node));
@@ -709,7 +749,7 @@ void __fastcall TfrmExpertManager::actAddExpertExecute(TObject *Sender) {
   __try {
     String strExpertName = "";
     String strExpertFileName = "";
-    if (TfrmExpertEditor::Execute(strExpertName, strExpertFileName, ExpandRADStudioMacros)) {
+    if (TfrmExpertEditor::Execute(dtExpert, strExpertName, strExpertFileName, ExpandRADStudioMacros)) {
       TListItem* Item = lvInstalledExperts->Items->Add();
       Item->Caption = strExpertName;
       Item->SubItems->Add(strExpertFileName);
@@ -739,7 +779,7 @@ void __fastcall TfrmExpertManager::actEditExpertExecute(TObject *Sender) {
   String strExpertName = lvInstalledExperts->Selected->Caption;
   String strOldExpertName = strExpertName;
   String strExpertFileName = lvInstalledExperts->Selected->SubItems->Strings[0];
-  if (TfrmExpertEditor::Execute(strExpertName, strExpertFileName, ExpandRADStudioMacros)) {
+  if (TfrmExpertEditor::Execute(dtExpert, strExpertName, strExpertFileName, ExpandRADStudioMacros)) {
     lvInstalledExperts->Selected->Caption = strExpertName;
     lvInstalledExperts->Selected->SubItems->Strings[0] = strExpertFileName;
     String strRegSection = GetRegPathToNode(tvExpertInstallations->Selected);
@@ -808,7 +848,7 @@ void __fastcall TfrmExpertManager::actActionExpertUpdate(TObject *Sender) {
   @param   Sender as a TObject
 
 **/
-void __fastcall TfrmExpertManager::actAddExpertUpdate(TObject *Sender) {
+void __fastcall TfrmExpertManager::actAddExpertPackageUpdate(TObject *Sender) {
   bool boolEnabled = false;
   TAction* Action = dynamic_cast<TAction*>(Sender);
   if (Action != NULL) {
@@ -978,10 +1018,6 @@ void __fastcall TfrmExpertManager::AddRADStudioMacro(String strMacro, String str
   @precon  None.
   @postcon The applications caption is updated with version and build information.
 
-  @refactor Refactor the proces of getting the version information from a filename into
-            a library unit so that it can be used in other CPP project rather than the
-            Pascal implementation in DGHLibrary.
-
 **/
 void __fastcall TfrmExpertManager::GetVersionAndBuild() {
   DWORD iVerHandle = NULL;
@@ -1113,5 +1149,134 @@ void __fastcall TfrmExpertManager::lvKnownPackagesItemChecked(TObject *Sender, T
     iniFile->WriteString(strKnownPackages, strExpertFileName, strExpertName);
     UpdateTreeViewStatus(tvExpertInstallations->Selected, true);
   }
+}
+
+void __fastcall TfrmExpertManager::actDeleteKnownIDEPackagesExecute(TObject *Sender) {
+  FUpdatingListView = true;
+  __try {
+    if (tvExpertInstallations->Selected != NULL && lvKnownIDEPackages->Selected != NULL) {
+      String strPackageFileName = lvKnownIDEPackages->Selected->SubItems->Strings[0];
+      String strRegSection = GetRegPathToNode(tvExpertInstallations->Selected);
+      TUPIniFile iniFile( new TRegistryINIFileCls(strRegSection + strKnownIDEPackages) );
+      iniFile->DeleteValue(strPackageFileName);
+      UpdateTreeViewStatus(tvExpertInstallations->Selected, true);
+    }
+  } __finally {
+    FUpdatingListView = false;
+  }
+}
+
+void __fastcall TfrmExpertManager::actAddKnownIDEPackageExecute(TObject *Sender) {
+  FUpdatingListView = true;
+  __try {
+    String strPackageName = "";
+    String strPackageFileName = "";
+    if (TfrmExpertEditor::Execute(dtPackage, strPackageName, strPackageFileName, ExpandRADStudioMacros)) {
+      TListItem* Item = lvKnownIDEPackages->Items->Add();
+      Item->Caption = strPackageName;
+      Item->SubItems->Add(strPackageFileName);
+      String strRegSection = GetRegPathToNode(tvExpertInstallations->Selected);
+      TUPIniFile iniFile = TUPIniFile( new TRegistryINIFileCls(strRegSection) );
+      iniFile->WriteString(strKnownIDEPackages, strPackageFileName, strPackageName);
+      UpdateTreeViewStatus(tvExpertInstallations->Selected, true);
+    }
+  } __finally {
+    FUpdatingListView = false;
+  }
+}
+
+void __fastcall TfrmExpertManager::actEditKnownIDEPackageExecute(TObject *Sender) {
+  String strPackageName = lvKnownIDEPackages->Selected->Caption;
+  String strPackageFileName = lvKnownIDEPackages->Selected->SubItems->Strings[0];
+  bool boolEnabled = lvKnownIDEPackages->Selected->Checked;
+  String strOldPackageFileName = strPackageFileName;
+  if (TfrmExpertEditor::Execute(dtPackage, strPackageName, strPackageFileName, ExpandRADStudioMacros)) {
+    lvKnownIDEPackages->Selected->SubItems->Strings[0] = strPackageFileName;
+    lvKnownIDEPackages->Selected->Caption = strPackageName;
+    String strRegSection = GetRegPathToNode(tvExpertInstallations->Selected);
+    TUPIniFile iniFile( new TRegistryINIFileCls(strRegSection) );
+    if(strOldPackageFileName.Compare(strPackageFileName) != 0) {
+      String strPackage = strKnownIDEPackages;
+      strPackage = strPackage + L"\\" + strOldPackageFileName;
+      iniFile->DeleteValue(strPackage);
+    }
+    iniFile->WriteString(strKnownIDEPackages, strPackageFileName, strPackageName);
+    UpdateTreeViewStatus(tvExpertInstallations->Selected, true);
+  }
+}
+
+void __fastcall TfrmExpertManager::actEditDeleteKnownIDEPackageUpdate(TObject *Sender) {
+  TAction* Action = dynamic_cast<TAction*>(Sender);
+  if (Action != NULL)
+    Action->Enabled = (lvKnownIDEPackages->Selected != NULL);
+}
+
+void __fastcall TfrmExpertManager::lvKnownIDEPackagesDblClick(TObject *Sender) {
+  actEditKnownIDEPackageExecute(Sender);
+}
+
+void __fastcall TfrmExpertManager::actEditDeleteKnownPackagesUpdate(TObject *Sender) {
+  TAction* Action = dynamic_cast<TAction*>(Sender);
+  if (Action != NULL)
+    Action->Enabled = (lvKnownPackages->Selected != NULL);
+}
+
+void __fastcall TfrmExpertManager::actAddKnownPackageExecute(TObject *Sender) {
+  FUpdatingListView = true;
+  __try {
+    String strPackageName = "";
+    String strPackageFileName = "";
+    if (TfrmExpertEditor::Execute(dtPackage, strPackageName, strPackageFileName, ExpandRADStudioMacros)) {
+      TListItem* Item = lvKnownPackages->Items->Add();
+      Item->Caption = strPackageName;
+      Item->SubItems->Add(strPackageFileName);
+      String strRegSection = GetRegPathToNode(tvExpertInstallations->Selected);
+      TUPIniFile iniFile = TUPIniFile( new TRegistryINIFileCls(strRegSection) );
+      iniFile->WriteString(strKnownPackages, strPackageFileName, strPackageName);
+      UpdateTreeViewStatus(tvExpertInstallations->Selected, true);
+    }
+  } __finally {
+    FUpdatingListView = false;
+  }
+}
+
+void __fastcall TfrmExpertManager::actEditKnownPackagesExecute(TObject *Sender) {
+  String strPackageName = lvKnownPackages->Selected->Caption;
+  String strPackageFileName = lvKnownPackages->Selected->SubItems->Strings[0];
+  bool boolEnabled = lvKnownPackages->Selected->Checked;
+  String strOldPackageFileName = strPackageFileName;
+  if (TfrmExpertEditor::Execute(dtPackage, strPackageName, strPackageFileName, ExpandRADStudioMacros)) {
+    lvKnownPackages->Selected->SubItems->Strings[0] = strPackageFileName;
+    lvKnownPackages->Selected->Caption = strPackageName;
+    String strRegSection = GetRegPathToNode(tvExpertInstallations->Selected);
+    TUPIniFile iniFile( new TRegistryINIFileCls(strRegSection) );
+    if(strOldPackageFileName.Compare(strPackageFileName) != 0) {
+      String strPackage = strKnownPackages;
+      strPackage = strPackage + L"\\" + strOldPackageFileName;
+      iniFile->DeleteValue(strPackage);
+    }
+    iniFile->WriteString(strKnownPackages, strPackageFileName, strPackageName);
+    UpdateTreeViewStatus(tvExpertInstallations->Selected, true);
+  }
+}
+
+void __fastcall TfrmExpertManager::actDeleteKnownPackagesExecute(TObject *Sender) {
+  FUpdatingListView = true;
+  __try {
+    if (tvExpertInstallations->Selected != NULL && lvKnownPackages->Selected != NULL) {
+      String strPackageFileName = lvKnownPackages->Selected->SubItems->Strings[0];
+      String strRegSection = GetRegPathToNode(tvExpertInstallations->Selected);
+      TUPIniFile iniFile( new TRegistryINIFileCls(strRegSection + strKnownPackages) );
+      iniFile->DeleteValue(strPackageFileName);
+      UpdateTreeViewStatus(tvExpertInstallations->Selected, true);
+    }
+  } __finally {
+    FUpdatingListView = false;
+  }
+}
+
+void __fastcall TfrmExpertManager::lvKnownPackagesDblClick(TObject *Sender)
+{
+  actEditKnownPackagesExecute(Sender);
 }
 
