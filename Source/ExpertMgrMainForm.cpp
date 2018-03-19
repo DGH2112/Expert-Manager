@@ -1085,14 +1085,12 @@ void __fastcall TfrmExpertManager::lvInstalledExpertsItemChecked(TObject *Sender
     if (Item->Checked) {
       iniFile = TUPIniFile( new TRegistryINIFileCls(strRegSection) );
       iniFile->WriteString(strExperts, strExpertName, strExpertFileName);
-      iniFile = TUPIniFile( new TRegistryINIFileCls(strRegSection +
-        strDisabledExperts) );
+      iniFile = TUPIniFile( new TRegistryINIFileCls(strRegSection + strDisabledExperts) );
       iniFile->DeleteValue(strExpertName);
     } else {
       iniFile = TUPIniFile( new TRegistryINIFileCls(strRegSection) );
       iniFile->WriteString(strDisabledExperts, strExpertName, strExpertFileName);
-      iniFile = TUPIniFile( new TRegistryINIFileCls(strRegSection +
-        strExperts) );
+      iniFile = TUPIniFile( new TRegistryINIFileCls(strRegSection + strExperts) );
       iniFile->DeleteValue(strExpertName);
     }
     UpdateTreeViewStatus(tvExpertInstallations->Selected, true);
@@ -1195,12 +1193,11 @@ void __fastcall TfrmExpertManager::actEditKnownIDEPackageExecute(TObject *Sender
     lvKnownIDEPackages->Selected->Caption = strPackageName;
     String strRegSection = GetRegPathToNode(tvExpertInstallations->Selected);
     TUPIniFile iniFile( new TRegistryINIFileCls(strRegSection) );
-    if(strOldPackageFileName.Compare(strPackageFileName) != 0) {
-      String strPackage = strKnownIDEPackages;
-      strPackage = strPackage + L"\\" + strOldPackageFileName;
-      iniFile->DeleteValue(strPackage);
-    }
     iniFile->WriteString(strKnownIDEPackages, strPackageFileName, strPackageName);
+    if(strOldPackageFileName.Compare(strPackageFileName) != 0) {
+      TUPIniFile iniFile( new TRegistryINIFileCls(strRegSection + strKnownIDEPackages) );
+      iniFile->DeleteValue(strOldPackageFileName);
+    }
     UpdateTreeViewStatus(tvExpertInstallations->Selected, true);
   }
 }
@@ -1250,12 +1247,11 @@ void __fastcall TfrmExpertManager::actEditKnownPackagesExecute(TObject *Sender) 
     lvKnownPackages->Selected->Caption = strPackageName;
     String strRegSection = GetRegPathToNode(tvExpertInstallations->Selected);
     TUPIniFile iniFile( new TRegistryINIFileCls(strRegSection) );
-    if(strOldPackageFileName.Compare(strPackageFileName) != 0) {
-      String strPackage = strKnownPackages;
-      strPackage = strPackage + L"\\" + strOldPackageFileName;
-      iniFile->DeleteValue(strPackage);
-    }
     iniFile->WriteString(strKnownPackages, strPackageFileName, strPackageName);
+    if(strOldPackageFileName.Compare(strPackageFileName) != 0) {
+      TUPIniFile iniFile( new TRegistryINIFileCls(strRegSection + strKnownPackages) );
+      iniFile->DeleteValue(strOldPackageFileName);
+    }
     UpdateTreeViewStatus(tvExpertInstallations->Selected, true);
   }
 }
