@@ -564,7 +564,7 @@ void __fastcall TfrmExpertManager::RenderPackageList(TListView* lvList, TStringL
     }
     if (iSelected >= lvList->Items->Count)
       iSelected--;
-    SetCurrentPosition(lvList, iSelected); //: @bug iSelected MUST be less thatn count
+    SetCurrentPosition(lvList, iSelected);
   } __finally {
     lvList->Items->EndUpdate();
   }
@@ -1149,6 +1149,16 @@ void __fastcall TfrmExpertManager::lvKnownPackagesItemChecked(TObject *Sender, T
   }
 }
 
+/**
+
+  This method is an on execcute event handler for the Delete Known IDE Packages action.
+
+  @precon  None.
+  @postcon Deletes the selected Known IDE Package.
+
+  @param   Sender as a TObject
+
+**/
 void __fastcall TfrmExpertManager::actDeleteKnownIDEPackagesExecute(TObject *Sender) {
   FUpdatingListView = true;
   __try {
@@ -1164,6 +1174,16 @@ void __fastcall TfrmExpertManager::actDeleteKnownIDEPackagesExecute(TObject *Sen
   }
 }
 
+/**
+
+  This is an on execute event handler for the Add Known IDE Packages action.
+
+  @precon  None.
+  @postcon Displays a dialogue to add a new package tp the Known IDE Package list.
+
+  @param   Sender as a TObject
+
+**/
 void __fastcall TfrmExpertManager::actAddKnownIDEPackageExecute(TObject *Sender) {
   FUpdatingListView = true;
   __try {
@@ -1183,6 +1203,16 @@ void __fastcall TfrmExpertManager::actAddKnownIDEPackageExecute(TObject *Sender)
   }
 }
 
+/**
+
+  This is an on execute event handler for the Edit Known IDE Package action.
+
+  @precon  None.
+  @postcon Displays a dialogue to edit the selected Known IDE Package.
+
+  @param   Sender as a TObject
+
+**/
 void __fastcall TfrmExpertManager::actEditKnownIDEPackageExecute(TObject *Sender) {
   String strPackageName = lvKnownIDEPackages->Selected->Caption;
   String strPackageFileName = lvKnownIDEPackages->Selected->SubItems->Strings[0];
@@ -1202,22 +1232,62 @@ void __fastcall TfrmExpertManager::actEditKnownIDEPackageExecute(TObject *Sender
   }
 }
 
+/**
+
+  This is an on update event handler for the Edit and Delete Known IDE Package actions.
+
+  @precon  None.
+  @postcon Enables the actions if a Known IDE Package item is selected in the list.
+
+  @param   Sender as a TObject
+
+**/
 void __fastcall TfrmExpertManager::actEditDeleteKnownIDEPackageUpdate(TObject *Sender) {
   TAction* Action = dynamic_cast<TAction*>(Sender);
   if (Action != NULL)
     Action->Enabled = (lvKnownIDEPackages->Selected != NULL);
 }
 
+/**
+
+  This is an on double click event handler for the Known IDE Packages list.
+
+  @precon  None.
+  @postcon Displays the selected item for editing.
+
+  @param   Sender as a TObject
+
+**/
 void __fastcall TfrmExpertManager::lvKnownIDEPackagesDblClick(TObject *Sender) {
   actEditKnownIDEPackageExecute(Sender);
 }
 
+/**
+
+  This is an on update event handler for the Edit and Delete Known Package actions.
+
+  @precon  None.
+  @postcon Enables the actions if a Known Package item is selected in the list.
+
+  @param   Sender as a TObject
+
+**/
 void __fastcall TfrmExpertManager::actEditDeleteKnownPackagesUpdate(TObject *Sender) {
   TAction* Action = dynamic_cast<TAction*>(Sender);
   if (Action != NULL)
     Action->Enabled = (lvKnownPackages->Selected != NULL);
 }
 
+/**
+
+  This is an on execute event handler for the Add Known Packages action.
+
+  @precon  None.
+  @postcon Displays a dialogue to add a new package tp the Known Package list.
+
+  @param   Sender as a TObject
+
+**/
 void __fastcall TfrmExpertManager::actAddKnownPackageExecute(TObject *Sender) {
   FUpdatingListView = true;
   __try {
@@ -1237,6 +1307,16 @@ void __fastcall TfrmExpertManager::actAddKnownPackageExecute(TObject *Sender) {
   }
 }
 
+/**
+
+  This is an on execute event handler for the Edit Known Package action.
+
+  @precon  None.
+  @postcon Displays a dialogue to edit the selected Known Package.
+
+  @param   Sender as a TObject
+
+**/
 void __fastcall TfrmExpertManager::actEditKnownPackagesExecute(TObject *Sender) {
   String strPackageName = lvKnownPackages->Selected->Caption;
   String strPackageFileName = lvKnownPackages->Selected->SubItems->Strings[0];
@@ -1256,6 +1336,16 @@ void __fastcall TfrmExpertManager::actEditKnownPackagesExecute(TObject *Sender) 
   }
 }
 
+/**
+
+  This method is an on execcute event handler for the Delete Known Packages action.
+
+  @precon  None.
+  @postcon Deletes the selected Known Package.
+
+  @param   Sender as a TObject
+
+**/
 void __fastcall TfrmExpertManager::actDeleteKnownPackagesExecute(TObject *Sender) {
   FUpdatingListView = true;
   __try {
@@ -1271,8 +1361,17 @@ void __fastcall TfrmExpertManager::actDeleteKnownPackagesExecute(TObject *Sender
   }
 }
 
-void __fastcall TfrmExpertManager::lvKnownPackagesDblClick(TObject *Sender)
-{
+/**
+
+  This is an on double click event handler for the Known Packages list.
+
+  @precon  None.
+  @postcon Displays the selected item for editing.
+
+  @param   Sender as a TObject
+
+**/
+void __fastcall TfrmExpertManager::lvKnownPackagesDblClick(TObject *Sender) {
   actEditKnownPackagesExecute(Sender);
 }
 

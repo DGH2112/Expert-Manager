@@ -4,9 +4,9 @@
 #pragma hdrstop
 #include <tchar.h>
 
-#ifdef ENABLE_CODESITE
-#pragma comment(lib,"CodeSiteLoggingPkg.lib")
-#pragma link "CodeSiteLogging"
+#ifdef DEBUG
+  #pragma comment(lib,"CodeSiteLoggingPkg.lib")
+  #pragma link "CodeSiteLogging"
 #endif
 
 //---------------------------------------------------------------------------
