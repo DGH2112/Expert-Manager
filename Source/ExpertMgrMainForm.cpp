@@ -1,3 +1,11 @@
+/**
+
+  @Date 25 Mar 2018
+
+  @todo Add tab sheet icons to indicate the status of the list (red, amber, green, etc.)
+  @todo Add progress bar / taskbar while the application loads
+
+**/
 #include <vcl.h>
 #pragma hdrstop
 
@@ -7,9 +15,6 @@
 #include <ExpertManagerGlobals.h>
 #include <regex>
 #include "ExpertManagerTypes.h"
-#ifdef ENABLE_CODESITE
-#include "CodeSiteLogging.hpp"
-#endif
 
 #pragma package(smart_init)
 #pragma resource "*.dfm"
@@ -287,6 +292,11 @@ void __fastcall TfrmExpertManager::FormCreate(TObject *Sender) {
   FCurrentRADStudioMacros = std::unique_ptr<TStringList>( new TStringList() );
   LoadSettings();
   FExpandedNodeManager = std::unique_ptr<TExpandedNodeManager>( new TExpandedNodeManager() );
+  FBDSMacroRegEx = std::unique_ptr<TRegEx>( new TRegEx("\\$\\(\\w+\\)",
+    TRegExOptions() << roIgnoreCase << roCompiled << roSingleLine) );
+  FBDSPathPatternRegEx = std::unique_ptr<TRegEx>( new TRegEx(
+      "(?<Name>(Embarcadero|CodeGear|Borland)\\\\[\\w\\s]+)\\\\(?<Number>\\d+.\\d)",
+      TRegExOptions() << roIgnoreCase << roSingleLine << roCompiled << roExplicitCapture));
 }
 
 /**
@@ -946,20 +956,42 @@ void __fastcall TfrmExpertManager::GetCurrentRADStudioMacros(String strRegPathTo
   TUPIniFile iniFile( new TRegistryINIFileCls(strRegPathToRADStudioRoot) );
   // Create system wide enviroment variables
   String strRootDir = iniFile->ReadString("", "RootDir", "");
-  AddRADStudioMacro("$(BDS)", strRootDir);
-  AddRADStudioMacro("$(BCB)", strRootDir);
-  AddRADStudioMacro("$(BDSBIN)", strRootDir + "\\Bin");
-  AddRADStudioMacro("$(BDSINCLUDE)", strRootDir + "\\Include");
-  AddRADStudioMacro("$(BDSLIB)", strRootDir + "\\Lib");
-  AddRADStudioMacro("$(DELPHI)", strRootDir);
-  // Create user wide environment variables
-  TUPStrList slUserEn( new TStringList() );
-  iniFile->ReadSection("Environment Variables", slUserEn.get());
-  for (int i = 0; i < slUserEn->Count; i++)
-    AddRADStudioMacro(
-      slUserEn->Strings[i],
-      iniFile->ReadString("Environment Variables", slUserEn->Strings[i], "")
-    );
+  if (strRootDir.Length() > 0) {
+    AddRADStudioMacro("$(BDS)", strRootDir);
+    AddRADStudioMacro("$(BCB)", strRootDir);
+    AddRADStudioMacro("$(BDSBIN)", strRootDir + "\\Bin");
+    AddRADStudioMacro("$(BDSINCLUDE)", strRootDir + "\\Include");
+    AddRADStudioMacro("$(BDSLIB)", strRootDir + "\\Lib");
+    AddRADStudioMacro("$(DELPHI)", strRootDir);
+    // Disect path
+    String strName = "Embarcadero\\Studio";
+    String strNumber = "0.0";
+    TMatchCollection M = FBDSPathPatternRegEx->Matches(strRootDir);
+    if (M.Count > 0) {
+      if (M.Item[0].Groups.Count >= 2)
+        strName = M.Item[0].Groups[1].Value;
+      if (M.Item[0].Groups.Count >= 3)
+        strNumber = M.Item[0].Groups[2].Value;
+    }
+    // Create extended paths
+    AddRADStudioMacro("$(BDSCATALOGREPOSITORY)",
+      "%userprofile%\\Documents\\" + strName + "\\" + strNumber + "\\CatalogRepository");
+    AddRADStudioMacro("$(BDSCatalogRepositoryAllUsers)",
+      "%public%\\Documents\\" + strName + "\\" + strNumber + "\\CatalogRepository");
+    AddRADStudioMacro("$(BDSCOMMONDIR)", "%public%\\Documents\\" + strName + "\\" + strNumber);
+    AddRADStudioMacro("$(BDSPLATFORMSDIR)", "%userprofile%\\Documents\\" + strName + "\\SDKs");
+    AddRADStudioMacro("$(BDSPROFILEDIR)", "%userprofile%\\Documents\\" + strName + "\\Profiles");
+    AddRADStudioMacro("$(BDSPROJECTDIR)", "%userprofile%\\Documents\\" + strName + "\\Projects");
+    AddRADStudioMacro("$(BDSUSERDIR)", "%userprofile%\\Documents\\" + strName + "\\" + strNumber);
+    // Create user wide environment variables
+    TUPStrList slUserEn( new TStringList() );
+    iniFile->ReadSection("Environment Variables", slUserEn.get());
+    for (int i = 0; i < slUserEn->Count; i++)
+      AddRADStudioMacro(
+        slUserEn->Strings[i],
+        iniFile->ReadString("Environment Variables", slUserEn->Strings[i], "")
+      );
+  }
 }
 
 /**
@@ -977,14 +1009,15 @@ void __fastcall TfrmExpertManager::GetCurrentRADStudioMacros(String strRegPathTo
 **/
 String __fastcall TfrmExpertManager::ExpandRADStudioMacros(String strFullFileName) {
   String strExpandedFileName = strFullFileName;
-  for (int i = 0; i < FCurrentRADStudioMacros->Count; i++) {
-    if (strExpandedFileName.Pos(FCurrentRADStudioMacros->Names[i]) > 0) {
+  TMatchCollection M = FBDSMacroRegEx->Matches(strFullFileName);
+  for (int iMatches = M.Count - 1; iMatches >= 0; iMatches--) {
+    int iIndex = FCurrentRADStudioMacros->IndexOfName(M.Item[iMatches].Value);
+    if (iIndex > -1) {
       strExpandedFileName = StringReplace(
         strExpandedFileName,
-        FCurrentRADStudioMacros->Names[i],
-        FCurrentRADStudioMacros->ValueFromIndex[i],
-        TReplaceFlags() << rfReplaceAll
-      );
+        M.Item[iMatches].Value,
+        FCurrentRADStudioMacros->ValueFromIndex[iIndex],
+        TReplaceFlags() << rfReplaceAll << rfIgnoreCase);
     }
   }
   return strExpandedFileName;
@@ -1003,11 +1036,16 @@ String __fastcall TfrmExpertManager::ExpandRADStudioMacros(String strFullFileNam
 
 **/
 void __fastcall TfrmExpertManager::AddRADStudioMacro(String strMacro, String strValue) {
+  int iSize = MAX_PATH;
+  String strBuffer;
+  strBuffer.SetLength(iSize);
+  iSize = ExpandEnvironmentStrings(strValue.c_str(), strBuffer.c_str(), iSize);
+  strBuffer.SetLength(--iSize);
   int iIndex = FCurrentRADStudioMacros->IndexOf(strMacro);
   if (iIndex == -1)
-    FCurrentRADStudioMacros->AddPair(strMacro, strValue);
+    FCurrentRADStudioMacros->AddPair(strMacro, strBuffer);
   else
-    FCurrentRADStudioMacros->ValueFromIndex[iIndex] = strValue;
+    FCurrentRADStudioMacros->ValueFromIndex[iIndex] = strBuffer;
 }
 
 /**

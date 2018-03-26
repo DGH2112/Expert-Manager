@@ -20,6 +20,11 @@
 #include <Vcl.Menus.hpp>
 #include <ExpandedNodeManager.h>
 #include <memory>
+#include <System.RegularExpressions.hpp>
+#include <System.RegularExpressionsCore.hpp>
+#ifdef DEBUG
+  #include "CodeSiteLogging.hpp"
+#endif
 
 /**
   This is an enumerate to define the state of the tree nodes as follows:
@@ -97,6 +102,8 @@ __published: // IDE-managed Components
 private:     // User declarations
   std::unique_ptr<TExpandedNodeManager> FExpandedNodeManager;
   std::unique_ptr<TStringList>          FCurrentRADStudioMacros;
+  std::unique_ptr<TRegEx>               FBDSMacroRegEx;
+  std::unique_ptr<TRegEx>               FBDSPathPatternRegEx;
   bool                                  FUpdatingListView;
   String                                FSelectedNodePath;
   String                                FLastExpertViewName;
