@@ -118,10 +118,17 @@ void __fastcall TfrmExpertManager::IterateExpertInstallations() {
   try {
     const String strInstallationRoots[3] = { L"Borland", L"CodeGear", L"Embarcadero"};
     tvExpertInstallations->Items->Clear();
-    for (auto strInstallation : strInstallationRoots) {
-      TTreeNode* N = tvExpertInstallations->Items->AddChild(NULL, strInstallation.c_str());
-      IterateSubInstallations(N, strInstallation);
-      SetExpandedNodes(N);
+    FProgressMgr->Show(3, "Please Wait...");
+    try {
+      for (auto strInstallation : strInstallationRoots) {
+        FProgressMgr->Update(FIteration, 0, 3, "Searching: " + strInstallation + "...");
+        TTreeNode* N = tvExpertInstallations->Items->AddChild(NULL, strInstallation.c_str());
+        IterateSubInstallations(N, strInstallation);
+        SetExpandedNodes(N);
+        FIteration++;
+      }
+    } __finally {
+      FProgressMgr->Hide();
     }
   } __finally {
     tvExpertInstallations->Items->EndUpdate();
@@ -149,10 +156,13 @@ void __fastcall TfrmExpertManager::IterateSubInstallations(TTreeNode *Node,
   iniFile->ReadSections(sl.get());
   TTreeNode *N = NULL;
   for (int i = 0; i < sl->Count; i++) {
+    String strKey = "Software\\" + strRootInstallation + "\\" + sl->Strings[i] + "\\";
+    FProgressMgr->Update(FIteration, i, sl->Count, strKey);
     N = tvExpertInstallations->Items->AddChild(Node, sl->Strings[i]);
-    IterateVersions(N, "Software\\" + strRootInstallation + "\\" + sl->Strings[i] + "\\");
+    IterateVersions(N, strKey);
     if (N->Count == 0)
       N->Delete();
+    FProgressMgr->Update(FIteration, i + 1, sl->Count, strKey);
   }
 }
 
@@ -297,6 +307,7 @@ void __fastcall TfrmExpertManager::FormCreate(TObject *Sender) {
   FBDSPathPatternRegEx = std::unique_ptr<TRegEx>( new TRegEx(
       "(?<Name>(Embarcadero|CodeGear|Borland)\\\\[\\w\\s]+)\\\\(?<Number>\\d+.\\d)",
       TRegExOptions() << roIgnoreCase << roSingleLine << roCompiled << roExplicitCapture));
+  FProgressMgr = std::unique_ptr<TEMProgressMgr>( new TEMProgressMgr() );
 }
 
 /**

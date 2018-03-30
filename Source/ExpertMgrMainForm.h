@@ -19,6 +19,7 @@
 #include <Vcl.ImgList.hpp>
 #include <Vcl.Menus.hpp>
 #include <ExpandedNodeManager.h>
+#include "ExpertManagerProgressMgr.h"
 #include <memory>
 #include <System.RegularExpressions.hpp>
 #include <System.RegularExpressionsCore.hpp>
@@ -109,6 +110,9 @@ private:     // User declarations
   String                                FLastExpertViewName;
   String                                FLastKnownIDEPackagesViewName;
   String                                FLastKnownPackagesViewName;
+  std::unique_ptr<TEMProgressMgr>       FProgressMgr;
+  int                                   FIteration = 1;
+protected:
   void __fastcall LoadSettings();
   void __fastcall SaveSettings();
   void __fastcall IterateExpertInstallations();
