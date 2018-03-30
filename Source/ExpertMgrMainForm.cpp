@@ -2,9 +2,6 @@
 
   @Date 25 Mar 2018
 
-  @todo Add tab sheet icons to indicate the status of the list (red, amber, green, etc.)
-  @todo Add progress bar / taskbar while the application loads
-
 **/
 #include <vcl.h>
 #pragma hdrstop
