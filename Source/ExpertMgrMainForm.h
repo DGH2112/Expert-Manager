@@ -72,6 +72,7 @@ __published: // IDE-managed Components
   TAction *actAddKnownPackage;
   TAction *actEditKnownPackages;
   TAction *actDeleteKnownPackages;
+  TImageList *ilTabStatus;
   void __fastcall FormCreate(TObject *Sender);
   void __fastcall FormDestroy(TObject *Sender);
   void __fastcall FormShow(TObject *Sender);
@@ -100,7 +101,12 @@ __published: // IDE-managed Components
   void __fastcall actAddKnownPackageExecute(TObject *Sender);
   void __fastcall actEditKnownPackagesExecute(TObject *Sender);
   void __fastcall lvKnownPackagesDblClick(TObject *Sender);
-private:     // User declarations
+private: // Constants
+  const TColor iNoneColour        = (TColor)0x0000FF; // Red
+  const TColor iOkayColour        = (TColor)0x008000; // Dark Green
+  const TColor iInvalidPathColour = (TColor)0x808080; // Dark Grey
+  const TColor iDuplicateColour   = (TColor)0x000080; // Dark Red
+private:
   std::unique_ptr<TExpandedNodeManager> FExpandedNodeManager;
   std::unique_ptr<TStringList>          FCurrentRADStudioMacros;
   std::unique_ptr<TRegEx>               FBDSMacroRegEx;
@@ -142,6 +148,8 @@ protected:
   void __fastcall GetCurrentPosition(TListView* lvList, String &strLastViewName,
     const String strViewName, int &iSelected);
   void __fastcall SetCurrentPosition(TListView* lvList, int &iSelected);
+  void SetTabStatus(TTabSheet* TabSheet, const TExpertValidation eStatus);
+  void SetNodeStatus(TTreeNode* Node, const TExpertValidation eStatus);
 public:      // User declarations
   __fastcall TfrmExpertManager(TComponent* Owner);
 };

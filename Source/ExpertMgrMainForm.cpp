@@ -368,22 +368,20 @@ void __fastcall TfrmExpertManager::tvExpertInstallationsAdvancedCustomDrawItem(T
           TTreeNode *Node, TCustomDrawState State, TCustomDrawStage Stage, bool &PaintImages,
           bool &DefaultDraw) {
   DefaultDraw = true;
-  TExpertValidation iExpertValidation = GetHighestValidation(Node);
-  switch (iExpertValidation) {
+  int i = (int)Node->Data;
+  switch ((TExpertValidation)i) {
     case evNone:
-      Sender->Canvas->Font->Color = clWindowText;
+      Sender->Canvas->Font->Color = iNoneColour;
       break;
     case evOkay:
-      Sender->Canvas->Font->Color = clBlue;
+      Sender->Canvas->Font->Color = iOkayColour;
       break;
     case evInvalidPaths:
-      Sender->Canvas->Font->Color = clGrayText;
+      Sender->Canvas->Font->Color = iInvalidPathColour;
       break;
     case evDuplication:
-      Sender->Canvas->Font->Color = clRed;
+      Sender->Canvas->Font->Color = iDuplicateColour;
       break;
-  default:
-    Sender->Canvas->Font->Color = clWindowText;
   }
 }
 
@@ -449,6 +447,9 @@ void __fastcall TfrmExpertManager::tvExpertInstallationsChange(TObject *Sender,
 **/
 void __fastcall TfrmExpertManager::ShowExperts(TTreeNode *Node) {
   lvInstalledExperts->Clear();
+  tabExperts->ImageIndex = 1;
+  tabKnownIDEPackages->ImageIndex = 1;
+  tabKnownPackages->ImageIndex = 1;
   if (Node) {
     int i = (int)Node->Data;
     TExpertValidation iExpertValidation = (TExpertValidation)i;
@@ -460,9 +461,39 @@ void __fastcall TfrmExpertManager::ShowExperts(TTreeNode *Node) {
       std::unique_ptr<TStringList> slDups( new TStringList() );
       AddExpertsToList(lvInstalledExperts, strSubSection, strExperts, true, slDups.get());
       AddExpertsToList(lvInstalledExperts, strSubSection, strDisabledExperts, false, slDups.get());
+      SetTabStatus(tabExperts, CheckExperts(Node, GetRegPathToNode(Node)));
       AddPackagesToList(lvKnownIDEPackages, strSubSection, strKnownIDEPackages);
+      SetTabStatus(tabKnownIDEPackages, CheckPackages(Node, GetRegPathToNode(Node), strKnownIDEPackages));
       AddPackagesToList(lvKnownPackages, strSubSection, strKnownPackages);
+      SetTabStatus(tabKnownPackages, CheckPackages(Node, GetRegPathToNode(Node), strKnownPackages));
     }
+  }
+}
+
+/**
+
+  This method updates the given tab sheet status images based on the given status.
+
+  @precon  TabSheet must be a valid instance.
+  @postcon The tab sheet image is updated.
+
+  @param   TabSheet as a TTabSheet
+  @param   eStatus as a TExpertValidation as a constant
+
+**/
+void TfrmExpertManager::SetTabStatus(TTabSheet* TabSheet, const TExpertValidation eStatus) {
+  switch (eStatus) {
+    case evOkay:
+      TabSheet->ImageIndex = 1;
+      break;
+    case evInvalidPaths:
+      TabSheet->ImageIndex = 2;
+      break;
+    case evDuplication:
+      TabSheet->ImageIndex = 3;
+      break;
+    default:
+      TabSheet->ImageIndex = 0;
   }
 }
 
@@ -500,6 +531,7 @@ void __fastcall TfrmExpertManager::AddExpertsToList(TListView* lvList, String st
       Item->Caption = slExperts->Names[i];
       Item->SubItems->Add(strFullFileName);
       Item->Checked = boolEnabled;
+      Item->Data = (void*)evOkay;
       int iIndex = slDups->IndexOf(strFileName);
       if (iIndex != -1) {
         Item->Data = (void*)evDuplication;
@@ -571,6 +603,7 @@ void __fastcall TfrmExpertManager::RenderPackageList(TListView* lvList, TStringL
       Item->Caption = strName;
       Item->SubItems->Add(strFullFileName);
       Item->Checked = (slPackages->Names[i].SubString(1, 2) != "__");
+      Item->Data = (void*)evOkay;
       // Update list item state
       int iIndex = slDups->IndexOf(strFileName);
       if (iIndex != -1) {
@@ -693,14 +726,18 @@ void __fastcall TfrmExpertManager::lvInstalledExpertsAdvancedCustomDrawItem(TCus
   DefaultDraw = true;
   int i = (int)Item->Data;
   switch ((TExpertValidation)i) {
+    case evNone:
+      Sender->Canvas->Font->Color = iNoneColour;
+      break;
+    case evOkay:
+      Sender->Canvas->Font->Color = iOkayColour;
+      break;
     case evInvalidPaths:
-      Sender->Canvas->Font->Color = clGrayText;
+      Sender->Canvas->Font->Color = iInvalidPathColour;
       break;
     case evDuplication:
-      Sender->Canvas->Font->Color = clRed;
+      Sender->Canvas->Font->Color = iDuplicateColour;
       break;
-  default:
-    Sender->Canvas->Font->Color = clWindowText;
   }
 }
 
@@ -747,10 +784,46 @@ void __fastcall TfrmExpertManager::UpdateTreeViewStatus(TTreeNode* Node, const b
     strKnownPackages);
   if (iKnownPackageValidation > iExpertValidation)
     iExpertValidation = iKnownPackageValidation;
-  Node->Data = (void*)iExpertValidation;
+  SetNodeStatus(Node, iExpertValidation);
+  TTreeNode* N = Node->Parent;
+  while (N) {
+    int eNodeValidation = (int)N->Data;
+    if ((int)iExpertValidation > eNodeValidation)
+      SetNodeStatus(N, iExpertValidation);
+    N = N->Parent;
+  }
   if (boolShow) {
     tvExpertInstallations->Invalidate();
     tvExpertInstallationsChange(tvExpertInstallations, tvExpertInstallations->Selected);
+  }
+}
+
+/**
+
+  This method updates the given node with the given status.
+
+  @precon  Node must be a valid instance.
+  @postcon The nodes status is updated.
+
+  @param   Node as a TTreeNode
+  @param   eStatus as a TExpertValidation as a Constant
+
+**/
+void TfrmExpertManager::SetNodeStatus(TTreeNode* Node, const TExpertValidation eStatus) {
+  Node->Data = (void*)eStatus;
+  switch (eStatus) {
+    case evNone:
+      Node->StateIndex = 0;
+      break;
+    case evOkay:
+      Node->StateIndex = 1;
+      break;
+    case evInvalidPaths:
+      Node->StateIndex = 2;
+      break;
+    case evDuplication:
+      Node->StateIndex = 3;
+      break;
   }
 }
 
