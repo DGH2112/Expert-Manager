@@ -438,9 +438,6 @@ void __fastcall TfrmExpertManager::tvExpertInstallationsChange(TObject *Sender,
 
 **/
 void __fastcall TfrmExpertManager::ShowExperts(TTreeNode *Node) {
-  lvInstalledExperts->Clear();
-  lvKnownIDEPackages->Clear();
-  lvKnownPackages->Clear();
   tabExperts->ImageIndex = 1;
   tabKnownIDEPackages->ImageIndex = 1;
   tabKnownPackages->ImageIndex = 1;
@@ -514,6 +511,7 @@ void __fastcall TfrmExpertManager::AddExpertsToList(TListView* lvList, String st
   // Render List
   lvList->Items->BeginUpdate();
   try {
+    lvList->Clear();
     GetCurrentRADStudioMacros(strSubSection);
     for (int i = 0; i < slExperts->Count; i++) {
       TListItem* Item = lvList->Items->Add();

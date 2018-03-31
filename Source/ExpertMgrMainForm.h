@@ -136,17 +136,13 @@ protected:
   String __fastcall ExpandRADStudioMacros(String strFullFileName);
   void __fastcall AddRADStudioMacro(String strMacro, String strValue);
   void __fastcall GetVersionAndBuild();
-  void __fastcall AddExpertsToList(TListView* lvList, String strSubSection, String strKey,
-    bool boolEnabled, TStringList* slDups);
+  void __fastcall AddExpertsToList(TListView* lvList, String strSubSection, String strKey, bool boolEnabled, TStringList* slDups);
   void __fastcall AddPackagesToList(TListView* lvList, String strSubSection, String strKey);
   void __fastcall ShowExperts(TTreeNode *Node);
   void __fastcall SelectTreeViewNode(const String strSelectedPath);
-  void __fastcall GetPackageList(TStringList* slPackages, const String strSubSection,
-    const String strKey);
-  void __fastcall RenderPackageList(TListView* lvList, TStringList* slPackages,
-    String &strLastViewName, const String strViewName);
-  void __fastcall GetCurrentPosition(TListView* lvList, String &strLastViewName,
-    const String strViewName, int &iSelected);
+  void __fastcall GetPackageList(TStringList* slPackages, const String strSubSection, const String strKey);
+  void __fastcall RenderPackageList(TListView* lvList, TStringList* slPackages, String &strLastViewName, const String strViewName);
+  void __fastcall GetCurrentPosition(TListView* lvList, String &strLastViewName, const String strViewName, int &iSelected);
   void __fastcall SetCurrentPosition(TListView* lvList, int &iSelected);
   void SetTabStatus(TTabSheet* TabSheet, const TExpertValidation eStatus);
   void SetNodeStatus(TTreeNode* Node, const TExpertValidation eStatus);
