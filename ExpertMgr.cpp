@@ -4,14 +4,15 @@
 #pragma hdrstop
 #include <tchar.h>
 
-#ifdef ENABLE_CODESITE
-#pragma comment(lib,"CodeSiteLoggingPkg.lib")
-#pragma link "CodeSiteLogging"
+#ifdef DEBUG
+  #pragma comment(lib,"CodeSiteLoggingPkg.lib")
+  #pragma link "CodeSiteLogging"
 #endif
 
 //---------------------------------------------------------------------------
-USEFORM("Source\ExpertEditorForm.cpp", frmExpertEditor);
+USEFORM("Source\ExpertManagerProgressForm.cpp", frmProgress);
 USEFORM("Source\ExpertMgrMainForm.cpp", frmExpertManager);
+USEFORM("Source\ExpertEditorForm.cpp", frmExpertEditor);
 //---------------------------------------------------------------------------
 int WINAPI _tWinMain(HINSTANCE, HINSTANCE, LPTSTR, int)
 {

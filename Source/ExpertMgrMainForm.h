@@ -19,7 +19,13 @@
 #include <Vcl.ImgList.hpp>
 #include <Vcl.Menus.hpp>
 #include <ExpandedNodeManager.h>
+#include "ExpertManagerProgressMgr.h"
 #include <memory>
+#include <System.RegularExpressions.hpp>
+#include <System.RegularExpressionsCore.hpp>
+#ifdef DEBUG
+  #include "CodeSiteLogging.hpp"
+#endif
 
 /**
   This is an enumerate to define the state of the tree nodes as follows:
@@ -27,7 +33,7 @@
                    instance.
     evOkay         A node for an expert instance that has all valid entries.
     evInvalidPath  A node for an expert instance that has invalid paths / filenames.
-    evDuplication  A node for an expert instance that has duplicate filenames (not paths).
+    evDuplication  A node     for an expert instance that has duplicate filenames (not paths).
 **/
 enum TExpertValidation {evNone, evOkay, evInvalidPaths, evDuplication};
 
@@ -66,6 +72,7 @@ __published: // IDE-managed Components
   TAction *actAddKnownPackage;
   TAction *actEditKnownPackages;
   TAction *actDeleteKnownPackages;
+  TImageList *ilTabStatus;
   void __fastcall FormCreate(TObject *Sender);
   void __fastcall FormDestroy(TObject *Sender);
   void __fastcall FormShow(TObject *Sender);
@@ -79,19 +86,39 @@ __published: // IDE-managed Components
   void __fastcall actEditExpertExecute(TObject *Sender);
   void __fastcall actDeleteExpertExecute(TObject *Sender);
   void __fastcall actActionExpertUpdate(TObject *Sender);
-  void __fastcall actAddExpertUpdate(TObject *Sender);
+  void __fastcall actAddExpertPackageUpdate(TObject *Sender);
   void __fastcall actFileExitExecute(TObject *Sender);
   void __fastcall lvInstalledExpertsItemChecked(TObject *Sender, TListItem *Item);
   void __fastcall lvKnownIDEPackagesItemChecked(TObject *Sender, TListItem *Item);
   void __fastcall lvKnownPackagesItemChecked(TObject *Sender, TListItem *Item);
-private:     // User declarations
+  void __fastcall actDeleteKnownIDEPackagesExecute(TObject *Sender);
+  void __fastcall actAddKnownIDEPackageExecute(TObject *Sender);
+  void __fastcall actEditKnownIDEPackageExecute(TObject *Sender);
+  void __fastcall actEditDeleteKnownIDEPackageUpdate(TObject *Sender);
+  void __fastcall lvKnownIDEPackagesDblClick(TObject *Sender);
+  void __fastcall actDeleteKnownPackagesExecute(TObject *Sender);
+  void __fastcall actEditDeleteKnownPackagesUpdate(TObject *Sender);
+  void __fastcall actAddKnownPackageExecute(TObject *Sender);
+  void __fastcall actEditKnownPackagesExecute(TObject *Sender);
+  void __fastcall lvKnownPackagesDblClick(TObject *Sender);
+private: // Constants
+  const TColor iNoneColour        = (TColor)0x0000FF; // Red
+  const TColor iOkayColour        = (TColor)0x008000; // Dark Green
+  const TColor iInvalidPathColour = (TColor)0x808080; // Dark Grey
+  const TColor iDuplicateColour   = (TColor)0x000080; // Dark Red
+private:
   std::unique_ptr<TExpandedNodeManager> FExpandedNodeManager;
   std::unique_ptr<TStringList>          FCurrentRADStudioMacros;
+  std::unique_ptr<TRegEx>               FBDSMacroRegEx;
+  std::unique_ptr<TRegEx>               FBDSPathPatternRegEx;
   bool                                  FUpdatingListView;
   String                                FSelectedNodePath;
   String                                FLastExpertViewName;
   String                                FLastKnownIDEPackagesViewName;
   String                                FLastKnownPackagesViewName;
+  std::unique_ptr<TEMProgressMgr>       FProgressMgr;
+  int                                   FIteration = 1;
+protected:
   void __fastcall LoadSettings();
   void __fastcall SaveSettings();
   void __fastcall IterateExpertInstallations();
@@ -121,6 +148,8 @@ private:     // User declarations
   void __fastcall GetCurrentPosition(TListView* lvList, String &strLastViewName,
     const String strViewName, int &iSelected);
   void __fastcall SetCurrentPosition(TListView* lvList, int &iSelected);
+  void SetTabStatus(TTabSheet* TabSheet, const TExpertValidation eStatus);
+  void SetNodeStatus(TTreeNode* Node, const TExpertValidation eStatus);
 public:      // User declarations
   __fastcall TfrmExpertManager(TComponent* Owner);
 };

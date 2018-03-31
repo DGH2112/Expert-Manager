@@ -27,16 +27,33 @@ __fastcall TfrmExpertEditor::TfrmExpertEditor(TComponent* Owner) : TForm(Owner) 
            If confirmed the method returns true and the new values are returned in the
            by reference parameters.
 
+  @param   DlgType               as a TDlgType
   @param   strExpertName         as a String as a Reference
   @param   strExpertFileName     as a String as a Reference
   @param   ExpandRADSTudioMacros as a TExpandRADStudioMacros
   @return  a bool
 
 **/
-bool __fastcall TfrmExpertEditor::Execute(String &strExpertName, String &strExpertFileName,
-  TExpandRADStudioMacros ExpandRADStudioMacrosProc) {
+bool __fastcall TfrmExpertEditor::Execute(const TDlgType DlgType, String &strExpertName,
+  String &strExpertFileName, TExpandRADStudioMacros ExpandRADStudioMacrosProc) {
   bool boolResult = false;
   std::unique_ptr<TfrmExpertEditor> frm( new TfrmExpertEditor(Application->MainForm) );
+  switch (DlgType) {
+    case dtExpert:
+      frm->Caption = L"Expert Editor";
+      frm->lblExpertKey->Caption = L"Expert &Name";
+      frm->lblExpertFileName->Caption = L"Expert &Filename";
+      frm->btnBrowse->Caption = L"&Browse for Expert";
+      frm->dlgOpen->Filter = L"Expert DLLs (*.dll)|*.dll";
+      break;
+    case dtPackage:
+      frm->Caption = L"Package Editor";
+      frm->lblExpertKey->Caption = L"Package &Name";
+      frm->lblExpertFileName->Caption = L"Package &Filename";
+      frm->btnBrowse->Caption = L"&Browse for Package";
+      frm->dlgOpen->Filter = L"Package BPLs (*.bpl)|*.bpl";
+      break;
+  }
   frm->edtExpertName->Text = strExpertName;
   frm->edtExpertFileName->Text = strExpertFileName;
   frm->FExpandRADStudioMacros = ExpandRADStudioMacrosProc;
