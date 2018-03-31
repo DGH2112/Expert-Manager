@@ -439,15 +439,14 @@ void __fastcall TfrmExpertManager::tvExpertInstallationsChange(TObject *Sender,
 **/
 void __fastcall TfrmExpertManager::ShowExperts(TTreeNode *Node) {
   lvInstalledExperts->Clear();
+  lvKnownIDEPackages->Clear();
+  lvKnownPackages->Clear();
   tabExperts->ImageIndex = 1;
   tabKnownIDEPackages->ImageIndex = 1;
   tabKnownPackages->ImageIndex = 1;
   if (Node) {
-    int i = (int)Node->Data;
-    TExpertValidation iExpertValidation = (TExpertValidation)i;
-    TExpertValidations setExpertValidations =
-      TExpertValidations() << evOkay << evInvalidPaths << evDuplication;
-    if (setExpertValidations.Contains(iExpertValidation)) {
+    std::wregex VersionNumPattern(L"\\d+.\\d");
+    if (std::regex_match(Node->Text.c_str(), VersionNumPattern)) {
       String strSubSection = GetRegPathToNode(Node);
       GetCurrentRADStudioMacros(strSubSection);
       std::unique_ptr<TStringList> slDups( new TStringList() );
