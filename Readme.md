@@ -14,7 +14,7 @@ Web Page: http://www.davidghoyle.co.uk/WordPress/?page_id=1361
 The purpose of this application is to provide a single location from which to
 manage Experts and Packages loaded into all version of RAD Studio, both main
 installations and alternate registry keys that are created by using the command
-line swiych `-r` with `BDS.EXE`.
+line switch `-r` with `BDS.EXE`.
 
 This application can be useful to all RAD Studio users but especially those who
 write IDE plug-ins and need to test them in custom registry keys.
@@ -31,3 +31,8 @@ and Known Packages.
 
 The tabbed veiw does not currently provide access to the sub-keys for C++
 Builder and Delphi which are under the Known IDE Packages in the registry.
+
+## Binaries
+
+You can download a binary of this project if you don't want to compile it
+yourself from the web page above.

@@ -392,10 +392,10 @@ void __fastcall TfrmExpertManager::tvExpertInstallationsAdvancedCustomDrawItem(T
 **/
 TExpertValidation  __fastcall TfrmExpertManager::GetHighestValidation(TTreeNode* Node) {
   int i = (int)Node->Data;
-  TExpertValidation iReturn = (TExpertValidation)i;
+  TExpertValidation iReturn = evNone;
   TTreeNode* N = Node->getFirstChild();
-  while (N != NULL) {
-    TExpertValidation iResult = GetHighestValidation(N);
+  while (N) {
+    TExpertValidation iResult = (TExpertValidation)(int)N->Data;
     if (iResult > iReturn)
       iReturn = iResult;
     N = N->getNextSibling();
@@ -438,16 +438,12 @@ void __fastcall TfrmExpertManager::tvExpertInstallationsChange(TObject *Sender,
 
 **/
 void __fastcall TfrmExpertManager::ShowExperts(TTreeNode *Node) {
-  lvInstalledExperts->Clear();
   tabExperts->ImageIndex = 1;
   tabKnownIDEPackages->ImageIndex = 1;
   tabKnownPackages->ImageIndex = 1;
   if (Node) {
-    int i = (int)Node->Data;
-    TExpertValidation iExpertValidation = (TExpertValidation)i;
-    TExpertValidations setExpertValidations =
-      TExpertValidations() << evOkay << evInvalidPaths << evDuplication;
-    if (setExpertValidations.Contains(iExpertValidation)) {
+    std::wregex VersionNumPattern(L"\\d+.\\d");
+    if (std::regex_match(Node->Text.c_str(), VersionNumPattern)) {
       String strSubSection = GetRegPathToNode(Node);
       GetCurrentRADStudioMacros(strSubSection);
       std::unique_ptr<TStringList> slDups( new TStringList() );
@@ -515,6 +511,7 @@ void __fastcall TfrmExpertManager::AddExpertsToList(TListView* lvList, String st
   // Render List
   lvList->Items->BeginUpdate();
   try {
+    lvList->Clear();
     GetCurrentRADStudioMacros(strSubSection);
     for (int i = 0; i < slExperts->Count; i++) {
       TListItem* Item = lvList->Items->Add();
@@ -779,9 +776,7 @@ void __fastcall TfrmExpertManager::UpdateTreeViewStatus(TTreeNode* Node, const b
   SetNodeStatus(Node, iExpertValidation);
   TTreeNode* N = Node->Parent;
   while (N) {
-    int eNodeValidation = (int)N->Data;
-    if ((int)iExpertValidation > eNodeValidation)
-      SetNodeStatus(N, iExpertValidation);
+    SetNodeStatus(N, GetHighestValidation(N));
     N = N->Parent;
   }
   if (boolShow) {
