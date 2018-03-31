@@ -10,9 +10,9 @@
 #endif
 
 //---------------------------------------------------------------------------
+USEFORM("Source\ExpertManagerProgressForm.cpp", frmProgress);
 USEFORM("Source\ExpertMgrMainForm.cpp", frmExpertManager);
 USEFORM("Source\ExpertEditorForm.cpp", frmExpertEditor);
-USEFORM("Source\ExpertManagerProgressForm.cpp", frmProgress);
 //---------------------------------------------------------------------------
 int WINAPI _tWinMain(HINSTANCE, HINSTANCE, LPTSTR, int)
 {

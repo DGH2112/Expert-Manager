@@ -1,8 +1,3 @@
-/**
-
-  @Date 25 Mar 2018
-
-**/
 #include <vcl.h>
 #pragma hdrstop
 
