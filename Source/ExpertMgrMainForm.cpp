@@ -392,10 +392,10 @@ void __fastcall TfrmExpertManager::tvExpertInstallationsAdvancedCustomDrawItem(T
 **/
 TExpertValidation  __fastcall TfrmExpertManager::GetHighestValidation(TTreeNode* Node) {
   int i = (int)Node->Data;
-  TExpertValidation iReturn = (TExpertValidation)i;
+  TExpertValidation iReturn = evNone;
   TTreeNode* N = Node->getFirstChild();
-  while (N != NULL) {
-    TExpertValidation iResult = GetHighestValidation(N);
+  while (N) {
+    TExpertValidation iResult = (TExpertValidation)(int)N->Data;
     if (iResult > iReturn)
       iReturn = iResult;
     N = N->getNextSibling();
@@ -779,9 +779,7 @@ void __fastcall TfrmExpertManager::UpdateTreeViewStatus(TTreeNode* Node, const b
   SetNodeStatus(Node, iExpertValidation);
   TTreeNode* N = Node->Parent;
   while (N) {
-    int eNodeValidation = (int)N->Data;
-    if ((int)iExpertValidation > eNodeValidation)
-      SetNodeStatus(N, iExpertValidation);
+    SetNodeStatus(N, GetHighestValidation(N));
     N = N->Parent;
   }
   if (boolShow) {
