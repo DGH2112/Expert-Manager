@@ -1,3 +1,10 @@
+/**
+
+  @todo Consider replacing the list veiws and treeview with TVirtualStringTree instances.
+  @todo Or instead of the above maintain the lists in the background and sync them with the listview
+        so the listviews do not need rendering for each change.
+
+**/
 #include <vcl.h>
 #pragma hdrstop
 
@@ -447,6 +454,8 @@ void __fastcall TfrmExpertManager::ShowExperts(TTreeNode *Node) {
       String strSubSection = GetRegPathToNode(Node);
       GetCurrentRADStudioMacros(strSubSection);
       std::unique_ptr<TStringList> slDups( new TStringList() );
+      lvInstalledExperts->Clear();
+      //: @bug Cannot remember the selected expert
       AddExpertsToList(lvInstalledExperts, strSubSection, strExperts, true, slDups.get());
       AddExpertsToList(lvInstalledExperts, strSubSection, strDisabledExperts, false, slDups.get());
       SetTabStatus(tabExperts, CheckExperts(Node, GetRegPathToNode(Node)));
@@ -511,7 +520,6 @@ void __fastcall TfrmExpertManager::AddExpertsToList(TListView* lvList, String st
   // Render List
   lvList->Items->BeginUpdate();
   try {
-    lvList->Clear();
     GetCurrentRADStudioMacros(strSubSection);
     for (int i = 0; i < slExperts->Count; i++) {
       TListItem* Item = lvList->Items->Add();
