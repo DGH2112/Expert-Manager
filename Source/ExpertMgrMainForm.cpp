@@ -788,7 +788,7 @@ void __fastcall TfrmExpertManager::UpdateTreeViewStatus(TTreeNode* Node, const b
     N = N->Parent;
   }
   if (boolShow) {
-    tvExpertInstallations->Invalidate();
+    //: @debug tvExpertInstallations->Invalidate();
     tvExpertInstallationsChange(tvExpertInstallations, tvExpertInstallations->Selected);
   }
 }
