@@ -6,7 +6,7 @@
         <AppType>Application</AppType>
         <MainSource>ExpertMgr.cpp</MainSource>
         <Base>True</Base>
-        <Config Condition="'$(Config)'==''">Debug</Config>
+        <Config Condition="'$(Config)'==''">Release</Config>
         <Platform Condition="'$(Platform)'==''">Win32</Platform>
         <TargetedPlatforms>1</TargetedPlatforms>
     </PropertyGroup>
@@ -58,7 +58,6 @@
         <_TCHARMapping>wchar_t</_TCHARMapping>
         <SanitizedProjectName>ExpertMgr</SanitizedProjectName>
         <DCC_CBuilderOutput>JPHNE</DCC_CBuilderOutput>
-        <UsePackages>true</UsePackages>
         <IntermediateOutputDir>$(Platform)\$(Config)</IntermediateOutputDir>
         <FinalOutputDir>$(Platform)\$(Config)</FinalOutputDir>
         <BCC_wpar>false</BCC_wpar>
@@ -124,7 +123,7 @@
         <VerInfo_Locale>1033</VerInfo_Locale>
         <AppEnableHighDPI>true</AppEnableHighDPI>
         <AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
-        <LinkPackageImports>rtl.bpi;vcl.bpi;vclactnband.bpi;vclx.bpi;vclimg.bpi</LinkPackageImports>
+        <LinkPackageStatics>rtl.lib;vcl.lib;vclactnband.lib;vclx.lib;vclimg.lib</LinkPackageStatics>
         <BT_BuildType>Debug</BT_BuildType>
     </PropertyGroup>
     <ItemGroup>
