@@ -3,9 +3,9 @@ Expert and Package Manager for Mutiple RAD Studio IDEs
 
 Author:   David Hoyle
 
-Version:  1.2b
+Version:  1.2c
 
-Date:     01 Apr 2018
+Date:     15 Jul 2018
 
 Web Page: http://www.davidghoyle.co.uk/WordPress/?page_id=1361
 
