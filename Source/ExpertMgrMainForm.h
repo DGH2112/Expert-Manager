@@ -9,6 +9,7 @@
 #include <Vcl.ExtCtrls.hpp>
 #include "Registry.hpp"
 #include <System.Actions.hpp>
+#include <Vcl.Graphics.hpp>
 #include <Vcl.ActnCtrls.hpp>
 #include <Vcl.ActnList.hpp>
 #include <Vcl.ActnMan.hpp>
@@ -53,7 +54,7 @@ __published: // IDE-managed Components
   TAction *actEditExpert;
   TAction *actDeleteExpert;
   TImageList *ilImages;
-  TPopupActionBar *pabContextMenu;
+  TPopupActionBar *pabExpertContextMenu;
   TMenuItem *Add1;
   TMenuItem *Edit1;
   TMenuItem *Delete1;
@@ -73,6 +74,14 @@ __published: // IDE-managed Components
   TAction *actEditKnownPackages;
   TAction *actDeleteKnownPackages;
   TImageList *ilTabStatus;
+  TPopupActionBar *pabKnownIDEPackagesContextMenu;
+  TMenuItem *mnu1;
+  TMenuItem *mnu2;
+  TMenuItem *mnu3;
+  TPopupActionBar *pabKnownPackagesContextMenu;
+  TMenuItem *mnu4;
+  TMenuItem *mnu5;
+  TMenuItem *mnu6;
   void __fastcall FormCreate(TObject *Sender);
   void __fastcall FormDestroy(TObject *Sender);
   void __fastcall FormShow(TObject *Sender);
@@ -102,10 +111,6 @@ __published: // IDE-managed Components
   void __fastcall actEditKnownPackagesExecute(TObject *Sender);
   void __fastcall lvKnownPackagesDblClick(TObject *Sender);
 private: // Constants
-  const TColor iNoneColour        = (TColor)0x0000FF; // Red
-  const TColor iOkayColour        = (TColor)0x008000; // Dark Green
-  const TColor iInvalidPathColour = (TColor)0x808080; // Dark Grey
-  const TColor iDuplicateColour   = (TColor)0x000080; // Dark Red
 private:
   std::unique_ptr<TExpandedNodeManager> FExpandedNodeManager;
   std::unique_ptr<TStringList>          FCurrentRADStudioMacros;
@@ -118,6 +123,10 @@ private:
   String                                FLastKnownPackagesViewName;
   std::unique_ptr<TEMProgressMgr>       FProgressMgr;
   int                                   FIteration = 1;
+  TColor                                FNoneColour        = (TColor)clRed;
+  TColor                                FOkayColour        = (TColor)clGreen;
+  TColor                                FInvalidPathColour = (TColor)clGray;
+  TColor                                FDuplicateColour   = (TColor)clMaroon;
 protected:
   void __fastcall LoadSettings();
   void __fastcall SaveSettings();

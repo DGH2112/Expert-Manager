@@ -4,6 +4,8 @@
 #pragma hdrstop
 #include <tchar.h>
 
+#include <Vcl.Styles.hpp>
+#include <Vcl.Themes.hpp>
 #ifdef DEBUG
   #pragma comment(lib,"CodeSiteLoggingPkg.lib")
   #pragma link "CodeSiteLogging"
