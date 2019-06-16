@@ -43,20 +43,32 @@ __fastcall TfrmExpertManager::TfrmExpertManager(TComponent* Owner) : TForm(Owner
 **/
 void __fastcall TfrmExpertManager::LoadSettings() {
   std::unique_ptr<TRegistryINIFileCls> iniFile( new TRegistryINIFileCls(strRegSettings) );
+  // Window Position
   Left = iniFile->ReadInteger(strSetup, strLeft, 100);
   Top = iniFile->ReadInteger(strSetup, strTop, 100);
   Width = iniFile->ReadInteger(strSetup, strWidth, Width);
   Height = iniFile->ReadInteger(strSetup, strHeight, Height);
+  // Divider
   tvExpertInstallations->Width = iniFile->ReadInteger(strSetup, strDividerWidth,
     tvExpertInstallations->Width);
+  // Column
   lvInstalledExperts->Columns->Items[0]->Width = iniFile->ReadInteger(strSetup, strExpertsListWidth,
     lvInstalledExperts->Columns->Items[0]->Width);
   lvKnownIDEPackages->Columns->Items[0]->Width = iniFile->ReadInteger(strSetup,
     strKnownIDEPackagesListWidth, lvKnownIDEPackages->Columns->Items[0]->Width);
   lvKnownPackages->Columns->Items[0]->Width = iniFile->ReadInteger(strSetup, strKnownPackagesListWidth,
     lvKnownPackages->Columns->Items[0]->Width);
+  // Active Page
   pagPages->ActivePageIndex = iniFile->ReadInteger(strSetup, strFocusedPage, pagPages->ActivePageIndex);
+  // Selected Item
   FSelectedNodePath = iniFile->ReadString(strSetup, strSelectedNode, "");
+  // Colours
+  FNoneColour = StringToColor(iniFile->ReadString(strSetup, strNoIssueColour, ColorToString(FNoneColour)));
+  FOkayColour = StringToColor(iniFile->ReadString(strSetup, strOkayColour, ColorToString(FOkayColour)));       
+  FInvalidPathColour = StringToColor(iniFile->ReadString(strSetup, strInvalidPathColour, ColorToString(FInvalidPathColour)));
+  FDuplicateColour = StringToColor(iniFile->ReadString(strSetup, strDuplicateColour, ColorToString(FDuplicateColour)));  
+  // Theme
+  TStyleManager::TrySetStyle(iniFile->ReadString(strSetup, strVCLTheme, "Windows"));
 }
 
 /**
@@ -90,17 +102,28 @@ void __fastcall TfrmExpertManager::SelectTreeViewNode(const String strSelectedPa
 **/
 void __fastcall TfrmExpertManager::SaveSettings() {
   std::unique_ptr<TRegistryINIFileCls> iniFile( new TRegistryINIFileCls(strRegSettings) );
+  // Window Position
   iniFile->WriteInteger(strSetup, strLeft, Left);
   iniFile->WriteInteger(strSetup, strTop, Top);
   iniFile->WriteInteger(strSetup, strWidth, Width);
   iniFile->WriteInteger(strSetup, strHeight, Height);
+  // Divider
   iniFile->WriteInteger(strSetup, strDividerWidth, tvExpertInstallations->Width);
   iniFile->WriteInteger(strSetup, strExpertsListWidth, lvInstalledExperts->Columns->Items[0]->Width);
   iniFile->WriteInteger(strSetup, strKnownIDEPackagesListWidth, lvKnownIDEPackages->Columns->Items[0]->Width);
   iniFile->WriteInteger(strSetup, strKnownPackagesListWidth, lvKnownPackages->Columns->Items[0]->Width);
+  // Active Page
   iniFile->WriteInteger(strSetup, strFocusedPage, pagPages->ActivePageIndex);
+  // Selected Item
   iniFile->WriteString(strSetup, strSelectedNode,
     FExpandedNodeManager->ConvertNodeToPath(tvExpertInstallations->Selected));
+  // Colours
+  iniFile->WriteString(strSetup, strNoIssueColour, ColorToString(FNoneColour));
+  iniFile->WriteString(strSetup, strOkayColour, ColorToString(FOkayColour));       
+  iniFile->WriteString(strSetup, strInvalidPathColour, ColorToString(FInvalidPathColour));
+  iniFile->WriteString(strSetup, strDuplicateColour, ColorToString(FDuplicateColour));  
+  // Theme
+  iniFile->WriteString(strSetup, strVCLTheme, ThemeServices()->Name);
 }
 
 /**
@@ -367,20 +390,30 @@ void __fastcall TfrmExpertManager::tvExpertInstallationsAdvancedCustomDrawItem(T
           TTreeNode *Node, TCustomDrawState State, TCustomDrawStage Stage, bool &PaintImages,
           bool &DefaultDraw) {
   DefaultDraw = true;
+  Sender->Canvas->Brush->Color = clWindow;
+  if (Node->Selected) {
+    Sender->Canvas->Brush->Color = clHighlight;
+  }
+  if (ThemeServices()->Enabled) {
+    Sender->Canvas->Brush->Color = ThemeServices()->GetSystemColor(Sender->Canvas->Brush->Color);
+  }
   int i = (int)Node->Data;
   switch ((TExpertValidation)i) {
     case evNone:
-      Sender->Canvas->Font->Color = iNoneColour;
+      Sender->Canvas->Font->Color = FNoneColour;
       break;
     case evOkay:
-      Sender->Canvas->Font->Color = iOkayColour;
+      Sender->Canvas->Font->Color = FOkayColour;
       break;
     case evInvalidPaths:
-      Sender->Canvas->Font->Color = iInvalidPathColour;
+      Sender->Canvas->Font->Color = FInvalidPathColour;
       break;
     case evDuplication:
-      Sender->Canvas->Font->Color = iDuplicateColour;
+      Sender->Canvas->Font->Color = FDuplicateColour;
       break;
+  }
+  if (Node->Selected) {
+    Sender->Canvas->Font->Color = ThemeServices()->GetSystemColor(clHighlightText);
   }
 }
 
@@ -721,20 +754,30 @@ String __fastcall TfrmExpertManager::GetRegPathToNode(TTreeNode* Node) {
 void __fastcall TfrmExpertManager::lvInstalledExpertsAdvancedCustomDrawItem(TCustomListView *Sender,
           TListItem *Item, TCustomDrawState State, TCustomDrawStage Stage, bool &DefaultDraw) {
   DefaultDraw = true;
+  Sender->Canvas->Brush->Color = clWindow;
+  if (Item->Selected) {
+    Sender->Canvas->Brush->Color = clHighlight;
+  }
+  if (ThemeServices()->Enabled) {
+    Sender->Canvas->Brush->Color = ThemeServices()->GetSystemColor(Sender->Canvas->Brush->Color);
+  }
   int i = (int)Item->Data;
   switch ((TExpertValidation)i) {
     case evNone:
-      Sender->Canvas->Font->Color = iNoneColour;
+      Sender->Canvas->Font->Color = FNoneColour;
       break;
     case evOkay:
-      Sender->Canvas->Font->Color = iOkayColour;
+      Sender->Canvas->Font->Color = FOkayColour;
       break;
     case evInvalidPaths:
-      Sender->Canvas->Font->Color = iInvalidPathColour;
+      Sender->Canvas->Font->Color = FInvalidPathColour;
       break;
     case evDuplication:
-      Sender->Canvas->Font->Color = iDuplicateColour;
+      Sender->Canvas->Font->Color = FDuplicateColour;
       break;
+  }
+  if (ThemeServices()->Enabled && Item->Selected) {
+    Sender->Canvas->Font->Color = ThemeServices()->GetSystemColor(clHighlightText);
   }
 }
 

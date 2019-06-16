@@ -19,6 +19,11 @@ extern wchar_t strKnownIDEPackagesListWidth[];
 extern wchar_t strKnownPackagesListWidth[];
 extern wchar_t strFocusedPage[];
 extern wchar_t strSelectedNode[];
+extern wchar_t strNoIssueColour[];
+extern wchar_t strOkayColour[];
+extern wchar_t strInvalidPathColour[];
+extern wchar_t strDuplicateColour[];
+extern wchar_t strVCLTheme[];
 #endif
 
 
