@@ -1,6 +1,6 @@
 /**
   
-  This module defines a class to display progress for the application.
+  This module defines a class which defines a form interface for updating the applications options.
 
   @Author  David Hoyle
   @Version 1.0
@@ -27,28 +27,42 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 **/
-#ifndef ExpertManagerProgressFormH
-#define ExpertManagerProgressFormH
+#ifndef ExpertManagerOptionsFormH
+#define ExpertManagerOptionsFormH
 
 #include <System.Classes.hpp>
 #include <Vcl.Controls.hpp>
 #include <Vcl.StdCtrls.hpp>
 #include <Vcl.Forms.hpp>
-#include <Vcl.ComCtrls.hpp>
+#include "ExpertManagerTypes.h"
+#include <Vcl.Buttons.hpp>
 #include <Vcl.ExtCtrls.hpp>
 
-/** A class / form for displaying the progress of searching for experts and package information. **/
-class TfrmProgress : public TForm {
-__published:
-  TProgressBar *ProgressBar;
-  TLabel *lblInfo;
-  TPanel *pnlEtching;
-private:
-public:
-  __fastcall TfrmProgress(TComponent* Owner);
-  void Initialise(const int iMax, const String strText);
-  void UpdateProgress(const int iPosition, const String strText);
+/** A class to represent an options form for the application. **/
+class TfrmExpertOptions : public TForm
+{
+__published:	// IDE-managed Components
+  TLabel *lblVCLTheme;
+  TComboBox *cbxVCLTheme;
+  TBitBtn *btnOK;
+  TBitBtn *btnCancel;
+  TPanel *pnlFudge;
+  TLabel *lblNoInfoColour;
+  TColorBox *cbxNoInfoColour;
+  TColorBox *cbxOkayColour;
+  TLabel *lblOKColour;
+  TColorBox *cbxInvalidPathColour;
+  TLabel *lblInvalidPathColour;
+  TColorBox *cbxDuplicateColour;
+  TLabel *lblDuplicateColour;
+private:	// User declarations
+protected:
+  void Initialise(TExpertOptions &Options);
+  void Finalise(TExpertOptions &Options);
+public:		// User declarations
+  __fastcall TfrmExpertOptions(TComponent* Owner);
+  bool static Execute(TExpertOptions &Options);
 };
 
-extern PACKAGE TfrmProgress *frmProgress;
+extern PACKAGE TfrmExpertOptions *frmExpertOptions;
 #endif

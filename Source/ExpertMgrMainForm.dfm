@@ -12,6 +12,7 @@ object frmExpertManager: TfrmExpertManager
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  Position = poDesigned
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
@@ -42,7 +43,7 @@ object frmExpertManager: TfrmExpertManager
     Top = 0
     Width = 507
     Height = 450
-    ActivePage = tabKnownPackages
+    ActivePage = tabExperts
     Align = alClient
     Images = ilTabStatus
     TabOrder = 1
@@ -88,7 +89,7 @@ object frmExpertManager: TfrmExpertManager
         HideSelection = False
         ReadOnly = True
         RowSelect = True
-        PopupMenu = pabContextMenu
+        PopupMenu = pabExpertContextMenu
         TabOrder = 1
         ViewStyle = vsReport
         OnAdvancedCustomDrawItem = lvInstalledExpertsAdvancedCustomDrawItem
@@ -138,7 +139,7 @@ object frmExpertManager: TfrmExpertManager
         HideSelection = False
         ReadOnly = True
         RowSelect = True
-        PopupMenu = pabContextMenu
+        PopupMenu = pabKnownIDEPackagesContextMenu
         TabOrder = 1
         ViewStyle = vsReport
         OnAdvancedCustomDrawItem = lvInstalledExpertsAdvancedCustomDrawItem
@@ -188,7 +189,7 @@ object frmExpertManager: TfrmExpertManager
         HideSelection = False
         ReadOnly = True
         RowSelect = True
-        PopupMenu = pabContextMenu
+        PopupMenu = pabKnownPackagesContextMenu
         TabOrder = 1
         ViewStyle = vsReport
         OnAdvancedCustomDrawItem = lvInstalledExpertsAdvancedCustomDrawItem
@@ -357,9 +358,9 @@ object frmExpertManager: TfrmExpertManager
   end
   object ilImages: TImageList
     Left = 88
-    Top = 144
+    Top = 112
     Bitmap = {
-      494C010103000800A80010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010103000800040010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -498,10 +499,10 @@ object frmExpertManager: TfrmExpertManager
       FFF8C403FFF80000FFFFEC07FFFF000000000000000000000000000000000000
       000000000000}
   end
-  object pabContextMenu: TPopupActionBar
+  object pabExpertContextMenu: TPopupActionBar
     Images = ilImages
     Left = 88
-    Top = 240
+    Top = 184
     object Add1: TMenuItem
       Action = actAddExpert
     end
@@ -513,10 +514,10 @@ object frmExpertManager: TfrmExpertManager
     end
   end
   object ilTabStatus: TImageList
-    Left = 336
-    Top = 136
+    Left = 312
+    Top = 112
     Bitmap = {
-      494C010104000800400010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010104000800040010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000002000000001002000000000000020
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -786,5 +787,38 @@ object frmExpertManager: TfrmExpertManager
       000000000000000080018001800180018001800180018001C003C003C003C003
       E007E007E007E007F81FF81FF81FF81F00000000000000000000000000000000
       000000000000}
+  end
+  object pabKnownIDEPackagesContextMenu: TPopupActionBar
+    Images = ilImages
+    Left = 88
+    Top = 232
+    object mnu1: TMenuItem
+      Action = actAddKnownIDEPackage
+    end
+    object mnu2: TMenuItem
+      Action = actEditKnownIDEPackage
+    end
+    object mnu3: TMenuItem
+      Action = actDeleteKnownIDEPackage
+    end
+  end
+  object pabKnownPackagesContextMenu: TPopupActionBar
+    Images = ilImages
+    Left = 88
+    Top = 288
+    object mnu4: TMenuItem
+      Action = actAddKnownPackage
+    end
+    object mnu5: TMenuItem
+      Action = actEditKnownPackages
+    end
+    object mnu6: TMenuItem
+      Action = actDeleteKnownPackages
+    end
+  end
+  object tmSystemMenu: TTimer
+    Enabled = False
+    Left = 88
+    Top = 352
   end
 end
