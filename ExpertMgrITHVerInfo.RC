@@ -1,8 +1,8 @@
 LANGUAGE LANG_ENGLISH,SUBLANG_ENGLISH_US
 
 1 VERSIONINFO LOADONCALL MOVEABLE DISCARDABLE IMPURE
-FILEVERSION 1, 3, 0, 504
-PRODUCTVERSION 1, 3, 0, 504
+FILEVERSION 1, 3, 0, 506
+PRODUCTVERSION 1, 3, 0, 506
 FILEFLAGSMASK VS_FFI_FILEFLAGSMASK
 FILEOS VOS__WINDOWS32
 FILETYPE VFT_APP
@@ -13,7 +13,7 @@ FILETYPE VFT_APP
     {
       VALUE "CompanyName", "Seasons Fall Music\000"
       VALUE "FileDescription", "Expert and Package Manager for Multiple RAD Studio instances.\000"
-      VALUE "FileVersion", "1.3.0.504\000"
+      VALUE "FileVersion", "1.3.0.506\000"
       VALUE "InternalName", "ExpertMgr\000"
       VALUE "LegalCopyright", "Seasons Fall Music\000"
       VALUE "LegalTrademarks", "Seasons Fall Music\000"
