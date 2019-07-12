@@ -162,6 +162,12 @@
             <DependentOn>Source\ExpertManagerGlobals.h</DependentOn>
             <BuildOrder>5</BuildOrder>
         </CppCompile>
+        <CppCompile Include="Source\ExpertManagerOptionsForm.cpp">
+            <Form>frmExpertOptions</Form>
+            <FormType>dfm</FormType>
+            <DependentOn>Source\ExpertManagerOptionsForm.h</DependentOn>
+            <BuildOrder>13</BuildOrder>
+        </CppCompile>
         <CppCompile Include="Source\ExpertManagerProgressForm.cpp">
             <Form>frmProgress</Form>
             <FormType>dfm</FormType>
@@ -182,8 +188,9 @@
             <DependentOn>Source\ExpertMgrMainForm.h</DependentOn>
             <BuildOrder>2</BuildOrder>
         </CppCompile>
-        <FormResources Include="Source\ExpertManagerProgressForm.dfm"/>
+        <FormResources Include="Source\ExpertManagerOptionsForm.dfm"/>
         <FormResources Include="Source\ExpertEditorForm.dfm"/>
+        <FormResources Include="Source\ExpertManagerProgressForm.dfm"/>
         <FormResources Include="Source\ExpertMgrMainForm.dfm"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>

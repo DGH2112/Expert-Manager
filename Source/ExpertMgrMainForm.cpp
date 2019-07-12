@@ -14,9 +14,13 @@
 #include <ExpertManagerGlobals.h>
 #include <regex>
 #include "ExpertManagerTypes.h"
+#include "ExpertManagerOptionsForm.h"
 
 #pragma package(smart_init)
 #pragma resource "*.dfm"
+
+/** System Menu custom menu valid for our Options menu. **/
+constexpr int iMenuID = 170;
 
 /** An IDE managed global variable for the application to create the main form. **/
 TfrmExpertManager *frmExpertManager;
@@ -63,10 +67,14 @@ void __fastcall TfrmExpertManager::LoadSettings() {
   // Selected Item
   FSelectedNodePath = iniFile->ReadString(strSetup, strSelectedNode, "");
   // Colours
-  FNoneColour = StringToColor(iniFile->ReadString(strSetup, strNoIssueColour, ColorToString(FNoneColour)));
-  FOkayColour = StringToColor(iniFile->ReadString(strSetup, strOkayColour, ColorToString(FOkayColour)));       
-  FInvalidPathColour = StringToColor(iniFile->ReadString(strSetup, strInvalidPathColour, ColorToString(FInvalidPathColour)));
-  FDuplicateColour = StringToColor(iniFile->ReadString(strSetup, strDuplicateColour, ColorToString(FDuplicateColour)));  
+  FOptions.FNoneColour = StringToColor(iniFile->ReadString(strSetup, strNoIssueColour,
+    ColorToString(FOptions.FNoneColour)));
+  FOptions.FOkayColour = StringToColor(iniFile->ReadString(strSetup, strOkayColour,
+    ColorToString(FOptions.FOkayColour)));       
+  FOptions.FInvalidPathColour = StringToColor(iniFile->ReadString(strSetup, strInvalidPathColour,
+    ColorToString(FOptions.FInvalidPathColour)));
+  FOptions.FDuplicateColour = StringToColor(iniFile->ReadString(strSetup, strDuplicateColour,
+    ColorToString(FOptions.FDuplicateColour)));  
   // Theme
   TStyleManager::TrySetStyle(iniFile->ReadString(strSetup, strVCLTheme, "Windows"));
 }
@@ -118,10 +126,10 @@ void __fastcall TfrmExpertManager::SaveSettings() {
   iniFile->WriteString(strSetup, strSelectedNode,
     FExpandedNodeManager->ConvertNodeToPath(tvExpertInstallations->Selected));
   // Colours
-  iniFile->WriteString(strSetup, strNoIssueColour, ColorToString(FNoneColour));
-  iniFile->WriteString(strSetup, strOkayColour, ColorToString(FOkayColour));       
-  iniFile->WriteString(strSetup, strInvalidPathColour, ColorToString(FInvalidPathColour));
-  iniFile->WriteString(strSetup, strDuplicateColour, ColorToString(FDuplicateColour));  
+  iniFile->WriteString(strSetup, strNoIssueColour, ColorToString(FOptions.FNoneColour));
+  iniFile->WriteString(strSetup, strOkayColour, ColorToString(FOptions.FOkayColour));       
+  iniFile->WriteString(strSetup, strInvalidPathColour, ColorToString(FOptions.FInvalidPathColour));
+  iniFile->WriteString(strSetup, strDuplicateColour, ColorToString(FOptions.FDuplicateColour));  
   // Theme
   iniFile->WriteString(strSetup, strVCLTheme, ThemeServices()->Name);
 }
@@ -330,6 +338,8 @@ void __fastcall TfrmExpertManager::FormCreate(TObject *Sender) {
       "(?<Name>(Embarcadero|CodeGear|Borland)\\\\[\\w\\s]+)\\\\(?<Number>\\d+.\\d)",
       TRegExOptions() << roIgnoreCase << roSingleLine << roCompiled << roExplicitCapture));
   FProgressMgr = std::unique_ptr<TEMProgressMgr>( new TEMProgressMgr() );
+  tmSystemMenu->OnTimer = SystemMenuTimerEvent;
+  tmSystemMenu->Enabled = true;
 }
 
 /**
@@ -400,16 +410,16 @@ void __fastcall TfrmExpertManager::tvExpertInstallationsAdvancedCustomDrawItem(T
   int i = (int)Node->Data;
   switch ((TExpertValidation)i) {
     case evNone:
-      Sender->Canvas->Font->Color = FNoneColour;
+      Sender->Canvas->Font->Color = FOptions.FNoneColour;
       break;
     case evOkay:
-      Sender->Canvas->Font->Color = FOkayColour;
+      Sender->Canvas->Font->Color = FOptions.FOkayColour;
       break;
     case evInvalidPaths:
-      Sender->Canvas->Font->Color = FInvalidPathColour;
+      Sender->Canvas->Font->Color = FOptions.FInvalidPathColour;
       break;
     case evDuplication:
-      Sender->Canvas->Font->Color = FDuplicateColour;
+      Sender->Canvas->Font->Color = FOptions.FDuplicateColour;
       break;
   }
   if (Node->Selected) {
@@ -764,16 +774,16 @@ void __fastcall TfrmExpertManager::lvInstalledExpertsAdvancedCustomDrawItem(TCus
   int i = (int)Item->Data;
   switch ((TExpertValidation)i) {
     case evNone:
-      Sender->Canvas->Font->Color = FNoneColour;
+      Sender->Canvas->Font->Color = FOptions.FNoneColour;
       break;
     case evOkay:
-      Sender->Canvas->Font->Color = FOkayColour;
+      Sender->Canvas->Font->Color = FOptions.FOkayColour;
       break;
     case evInvalidPaths:
-      Sender->Canvas->Font->Color = FInvalidPathColour;
+      Sender->Canvas->Font->Color = FOptions.FInvalidPathColour;
       break;
     case evDuplication:
-      Sender->Canvas->Font->Color = FDuplicateColour;
+      Sender->Canvas->Font->Color = FOptions.FDuplicateColour;
       break;
   }
   if (ThemeServices()->Enabled && Item->Selected) {
@@ -1535,3 +1545,58 @@ void __fastcall TfrmExpertManager::lvKnownPackagesDblClick(TObject *Sender) {
   actEditKnownPackagesExecute(Sender);
 }
 
+/**
+
+  This is a message handler for the WM_SYSCOMMAND message so we can intercept the system menu.
+
+  @precon  None.
+  @postcon Displays the Options form if our new system menu is selected.
+
+  @param   Message as a TWMSysCommand as a reference
+
+**/
+void __fastcall TfrmExpertManager::WMSysCommand(TWMSysCommand &Message) {
+   switch (Message.CmdType) {
+    case iMenuID:
+      FOptions.FVCLTheme = StyleServices()->Name;
+      if (TfrmExpertOptions::Execute(FOptions)) {
+        if (FOptions.FVCLTheme != StyleServices()->Name) {
+          TStyleManager::TrySetStyle(FOptions.FVCLTheme);
+          tmSystemMenu->Enabled = true;
+        }
+        tvExpertInstallations->Invalidate();
+        lvInstalledExperts->Invalidate();
+        lvKnownIDEPackages->Invalidate();
+        lvKnownPackages->Invalidate();
+      }
+      break;
+  }
+  TForm::Dispatch(&Message);
+};
+
+/**
+
+  This method installs an options menu in the system menu of the application.
+
+  @precon  None.
+  @postcon The options menu is installed in the system menu.
+
+**/
+void TfrmExpertManager::AddOptionsMenu() {
+  HMENU SystemMenu = GetSystemMenu(Handle, False);
+  AppendMenu(SystemMenu, MF_SEPARATOR, 0, NULL);
+  AppendMenu(SystemMenu, MF_STRING, iMenuID, L"&Options...");
+};
+
+/**
+
+  This is an on timer event handler for the System Menu timer.
+
+  @precon  None.
+  @postcon Stops the timer and installs the options menu in the system menu.
+
+**/
+void __fastcall TfrmExpertManager::SystemMenuTimerEvent(TObject* Sender) {
+  tmSystemMenu->Enabled = false;
+  AddOptionsMenu();
+};

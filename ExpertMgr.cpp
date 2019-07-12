@@ -13,8 +13,9 @@
 
 //---------------------------------------------------------------------------
 USEFORM("Source\ExpertManagerProgressForm.cpp", frmProgress);
-USEFORM("Source\ExpertMgrMainForm.cpp", frmExpertManager);
 USEFORM("Source\ExpertEditorForm.cpp", frmExpertEditor);
+USEFORM("Source\ExpertMgrMainForm.cpp", frmExpertManager);
+USEFORM("Source\ExpertManagerOptionsForm.cpp", frmExpertOptions);
 //---------------------------------------------------------------------------
 int WINAPI _tWinMain(HINSTANCE, HINSTANCE, LPTSTR, int)
 {
@@ -24,6 +25,7 @@ int WINAPI _tWinMain(HINSTANCE, HINSTANCE, LPTSTR, int)
      Application->MainFormOnTaskBar = true;
      Application->Title = "Expert and Package Manager for Multiple RAD Studio Installations";
      Application->CreateForm(__classid(TfrmExpertManager), &frmExpertManager);
+     Application->CreateForm(__classid(TfrmExpertOptions), &frmExpertOptions);
      Application->Run();
   }
   catch (Exception &exception)

@@ -9,7 +9,6 @@
 #include <Vcl.ExtCtrls.hpp>
 #include "Registry.hpp"
 #include <System.Actions.hpp>
-#include <Vcl.Graphics.hpp>
 #include <Vcl.ActnCtrls.hpp>
 #include <Vcl.ActnList.hpp>
 #include <Vcl.ActnMan.hpp>
@@ -21,6 +20,7 @@
 #include <Vcl.Menus.hpp>
 #include <ExpandedNodeManager.h>
 #include "ExpertManagerProgressMgr.h"
+#include "ExpertManagerTypes.h"
 #include <memory>
 #include <System.RegularExpressions.hpp>
 #include <System.RegularExpressionsCore.hpp>
@@ -42,7 +42,7 @@ enum TExpertValidation {evNone, evOkay, evInvalidPaths, evDuplication};
 typedef Set<TExpertValidation, evNone, evDuplication> TExpertValidations;
 
 /** A class to represent a form for displaying the expert installations in a treeview. **/
-class TfrmExpertManager : public TForm
+    class TfrmExpertManager : public TForm
 {
 __published: // IDE-managed Components
   TTreeView *tvExpertInstallations;
@@ -82,6 +82,7 @@ __published: // IDE-managed Components
   TMenuItem *mnu4;
   TMenuItem *mnu5;
   TMenuItem *mnu6;
+  TTimer *tmSystemMenu;
   void __fastcall FormCreate(TObject *Sender);
   void __fastcall FormDestroy(TObject *Sender);
   void __fastcall FormShow(TObject *Sender);
@@ -123,10 +124,7 @@ private:
   String                                FLastKnownPackagesViewName;
   std::unique_ptr<TEMProgressMgr>       FProgressMgr;
   int                                   FIteration = 1;
-  TColor                                FNoneColour        = (TColor)clRed;
-  TColor                                FOkayColour        = (TColor)clGreen;
-  TColor                                FInvalidPathColour = (TColor)clGray;
-  TColor                                FDuplicateColour   = (TColor)clMaroon;
+  TExpertOptions                        FOptions;
 protected:
   void __fastcall LoadSettings();
   void __fastcall SaveSettings();
@@ -155,6 +153,13 @@ protected:
   void __fastcall SetCurrentPosition(TListView* lvList, int &iSelected);
   void SetTabStatus(TTabSheet* TabSheet, const TExpertValidation eStatus);
   void SetNodeStatus(TTreeNode* Node, const TExpertValidation eStatus);
+  void AddOptionsMenu();
+  void __fastcall WMSysCommand(TWMSysCommand &Message);
+  BEGIN_MESSAGE_MAP
+    MESSAGE_HANDLER(WM_SYSCOMMAND, TWMSysCommand, WMSysCommand)
+  END_MESSAGE_MAP(TForm)
+  void __fastcall DisplayOptions();
+  void __fastcall SystemMenuTimerEvent(TObject* Sender);
 public:      // User declarations
   __fastcall TfrmExpertManager(TComponent* Owner);
 };

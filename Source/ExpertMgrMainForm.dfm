@@ -12,6 +12,7 @@ object frmExpertManager: TfrmExpertManager
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  Position = poDesigned
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
@@ -814,5 +815,10 @@ object frmExpertManager: TfrmExpertManager
     object mnu6: TMenuItem
       Action = actDeleteKnownPackages
     end
+  end
+  object tmSystemMenu: TTimer
+    Enabled = False
+    Left = 88
+    Top = 352
   end
 end
