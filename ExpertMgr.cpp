@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    12 Jul 2019
+  @Date    13 Jul 2019
 
   @license
 
@@ -39,11 +39,12 @@
   #pragma link "CodeSiteLogging"
 #endif
 
-USEFORM("Source\ExpertManagerProgressForm.cpp", frmProgress);
-USEFORM("Source\ExpertEditorForm.cpp", frmExpertEditor);
-USEFORM("Source\ExpertMgrMainForm.cpp", frmExpertManager);
 USEFORM("Source\ExpertManagerOptionsForm.cpp", frmExpertOptions);
-
+USEFORM("Source\ExpertEditorForm.cpp", frmExpertEditor);
+USEFORM("Source\ExpertManagerProgressForm.cpp", frmProgress);
+USEFORM("Source\ExpertMgrMainForm.cpp", frmExpertManager);
+USEFORM("Source\ExpertMgrAboutBoxForm.cpp", frmExpertMgrAboutBox);
+//---------------------------------------------------------------------------
 int WINAPI _tWinMain(HINSTANCE, HINSTANCE, LPTSTR, int)
 {
   try
@@ -52,7 +53,7 @@ int WINAPI _tWinMain(HINSTANCE, HINSTANCE, LPTSTR, int)
      Application->MainFormOnTaskBar = true;
      Application->Title = "Expert and Package Manager for Multiple RAD Studio Installations";
      Application->CreateForm(__classid(TfrmExpertManager), &frmExpertManager);
-     Application->CreateForm(__classid(TfrmExpertOptions), &frmExpertOptions);
+     Application->CreateForm(__classid(TfrmExpertMgrAboutBox), &frmExpertMgrAboutBox);
      Application->Run();
   }
   catch (Exception &exception)

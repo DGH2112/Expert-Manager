@@ -36,8 +36,6 @@
 #pragma package(smart_init)
 #pragma resource "*.dfm"
 
-TfrmExpertOptions *frmExpertOptions;
-
 /**
   
   This is a constructor for the TfrmExpertOptions form.
