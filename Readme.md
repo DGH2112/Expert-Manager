@@ -2,9 +2,9 @@
 
 Author:   David Hoyle
 
-Version:  1.3
+Version:  1.3a
 
-Date:     12 Jul 2019
+Date:     13 Jul 2019
 
 Web Page: http://www.davidghoyle.co.uk/WordPress/?page_id=1361
 
@@ -27,6 +27,10 @@ The tabbed veiw does not currently provide access to the sub-keys for C++ Builde
 You can download a binary of this project if you don't want to compile it yourself from the web page above.
 
 ## Changes
+
+Version 1.3a
+
+ * Added an About Box.
 
 Version 1.3
 
