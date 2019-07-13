@@ -6,7 +6,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    12 Jul 2019
+  @Date    13 Jul 2019
 
   @license
 
@@ -43,12 +43,15 @@
 #include <regex>
 #include "ExpertManagerTypes.h"
 #include "ExpertManagerOptionsForm.h"
+#include "ExpertMgrAboutBoxForm.h"
 
 #pragma package(smart_init)
 #pragma resource "*.dfm"
 
 /** System Menu custom menu valid for our Options menu. **/
-constexpr int iMenuID = 170;
+constexpr int iOptionsMenuID = 170;
+/** System Menu custom menu valid for our About menu. **/
+constexpr int iAboutMenuID = 180;
 
 /** An IDE managed global variable for the application to create the main form. **/
 TfrmExpertManager *frmExpertManager;
@@ -1585,7 +1588,7 @@ void __fastcall TfrmExpertManager::lvKnownPackagesDblClick(TObject *Sender) {
 **/
 void __fastcall TfrmExpertManager::WMSysCommand(TWMSysCommand &Message) {
    switch (Message.CmdType) {
-    case iMenuID:
+    case iOptionsMenuID:
       FOptions.FVCLTheme = StyleServices()->Name;
       if (TfrmExpertOptions::Execute(FOptions)) {
         if (FOptions.FVCLTheme != StyleServices()->Name) {
@@ -1597,6 +1600,9 @@ void __fastcall TfrmExpertManager::WMSysCommand(TWMSysCommand &Message) {
         lvKnownIDEPackages->Invalidate();
         lvKnownPackages->Invalidate();
       }
+      break;
+    case iAboutMenuID:
+      TfrmExpertMgrAboutBox::Execute();
       break;
   }
   TForm::Dispatch(&Message);
@@ -1613,7 +1619,9 @@ void __fastcall TfrmExpertManager::WMSysCommand(TWMSysCommand &Message) {
 void TfrmExpertManager::AddOptionsMenu() {
   HMENU SystemMenu = GetSystemMenu(Handle, False);
   AppendMenu(SystemMenu, MF_SEPARATOR, 0, NULL);
-  AppendMenu(SystemMenu, MF_STRING, iMenuID, L"&Options...");
+  AppendMenu(SystemMenu, MF_STRING, iOptionsMenuID, L"&Options...");
+  AppendMenu(SystemMenu, MF_SEPARATOR, 0, NULL);
+  AppendMenu(SystemMenu, MF_STRING, iAboutMenuID, L"&About...");
 };
 
 /**
@@ -1628,3 +1636,4 @@ void __fastcall TfrmExpertManager::SystemMenuTimerEvent(TObject* Sender) {
   tmSystemMenu->Enabled = false;
   AddOptionsMenu();
 };
+
